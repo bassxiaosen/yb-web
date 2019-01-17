@@ -35,4 +35,6 @@ export default {
   'menu.account.settings': '个人设置',
   'menu.account.trigger': '触发报错',
   'menu.account.logout': '退出登录',
+  'menu.teacher': '教师管理',
+  'menu.course': '课程管理',
 };

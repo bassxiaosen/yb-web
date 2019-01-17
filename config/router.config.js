@@ -256,6 +256,18 @@ export default [
         ],
       },
       {
+        path: '/teacherManage',
+        component: './Teacher/TeacherManage',
+        name: 'teacher',
+        icon: 'team',
+      },
+      {
+        path: '/courseManage',
+        component: './Course/CourseManage',
+        name: 'course',
+        icon: 'table',
+      },
+      {
         component: '404',
       },
     ],

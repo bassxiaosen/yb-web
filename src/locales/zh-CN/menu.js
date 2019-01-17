@@ -37,4 +37,5 @@ export default {
   'menu.account.logout': '退出登录',
   'menu.teacher': '教师管理',
   'menu.course': '课程管理',
+  'menu.courseDetail': '课程详情',
 };

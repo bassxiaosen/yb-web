@@ -2,6 +2,8 @@ import React, { PureComponent, Fragment } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { connect } from 'dva';
 import moment from 'moment';
+import Link from 'umi/link';
+
 import {
   Row,
   Col,
@@ -87,7 +89,14 @@ class CourseManage extends React.Component {
   render() {
     const { data } = this.state;
     const columns = [
-      { title: '课程名称', dataIndex: 'courseName', key: 'name' },
+      {
+        title: '课程名称',
+        dataIndex: 'courseName',
+        key: 'name',
+        render: (text, record) => (
+          <Link to={`courseManage/courseDetail/${record.id}`}>{record.courseName}</Link>
+        ),
+      },
       { title: '学院', dataIndex: 'academy', key: 'academy' },
       { title: '时间', dataIndex: 'time', key: 'number' },
       {

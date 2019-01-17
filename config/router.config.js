@@ -268,6 +268,13 @@ export default [
         icon: 'table',
       },
       {
+        path: '/courseManage/courseDetail/:id',
+        component: './CourseDetail/CourseDetail',
+        name: 'courseDetail',
+        icon: 'table',
+        hideInMenu: true,
+      },
+      {
         component: '404',
       },
     ],

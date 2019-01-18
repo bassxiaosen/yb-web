@@ -1,6 +1,19 @@
 import React, { Component } from 'react';
-import { Card, Table, Row, Col, Input, Button, Upload, Icon, Divider } from 'antd';
+import {
+  Card,
+  Table,
+  Row,
+  Col,
+  Input,
+  Button,
+  Upload,
+  Icon,
+  Divider,
+  Popconfirm,
+  message,
+} from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import EditCourseDetail from './EditCourseDetail';
 import styles from './styles.less';
 const Search = Input.Search;
 export default class CourseDetail extends Component {
@@ -9,14 +22,37 @@ export default class CourseDetail extends Component {
     this.state = {
       data: [
         {
+          id: '2015081055',
           name: '周嘉炜',
           number: '2015081055',
           academy: '医学信息工程学院',
           subject: '计算机科学与技术',
         },
       ],
+      visible: false,
+      current: {},
     };
+    this.modalForm = React.createRef();
   }
+
+  handleCancel = () => {
+    this.setState({ visible: false });
+  };
+
+  openModal = record => {
+    const ref = this.modalForm.current;
+    ref.setFieldsValue(record);
+    this.setState({ current: record, visible: true });
+  };
+
+  handleOk = value => {
+    console.log(value);
+  };
+
+  onClickDelete = id => {
+    message.success(`删除学生id：${id}`);
+  };
+
   render() {
     const { data } = this.state;
     const columns = [
@@ -45,9 +81,14 @@ export default class CourseDetail extends Component {
         title: '操作',
         render: (text, record) => (
           <span>
-            <a href="javascript:;">修改</a>
+            <a onClick={this.openModal.bind(this, record)}>修改</a>
             <Divider type="vertical" />
-            <a href="javascript:;">删除</a>
+            <Popconfirm
+              title="确认删除此学生？"
+              onConfirm={this.onClickDelete.bind(this, record.id)}
+            >
+              <a href="javascript:;">删除</a>
+            </Popconfirm>
           </span>
         ),
       },
@@ -67,7 +108,9 @@ export default class CourseDetail extends Component {
           <div className={styles.header}>
             <Row>
               <Col span={6}>
-                <Button type="primary">添加学生</Button>
+                <Button type="primary" onClick={this.openModal.bind(this, {})}>
+                  添加学生
+                </Button>
               </Col>
               <Col span={6}>
                 <Upload>
@@ -82,8 +125,15 @@ export default class CourseDetail extends Component {
               </Col>
             </Row>
           </div>
-          <Table columns={columns} dataSource={data} />
+          <Table columns={columns} dataSource={data} rowKey={record => record.number} />
         </Card>
+        <EditCourseDetail
+          ref={this.modalForm}
+          handleOk={this.handleOk}
+          handleCancel={this.handleCancel}
+          visible={this.state.visible}
+          current={this.state.current}
+        />
       </PageHeaderWrapper>
     );
   }

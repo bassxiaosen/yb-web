@@ -23,14 +23,15 @@ export default class CourseDetail extends Component {
       data: [
         {
           id: '2015081055',
-          name: '周嘉炜',
-          number: '2015081055',
+          name: '某某某',
+          number: '2015081000',
           academy: '医学信息工程学院',
           subject: '计算机科学与技术',
         },
       ],
       visible: false,
       current: {},
+      currentPage: 2,
     };
     this.modalForm = React.createRef();
   }
@@ -54,7 +55,7 @@ export default class CourseDetail extends Component {
   };
 
   render() {
-    const { data } = this.state;
+    const { data, currentPage } = this.state;
     const columns = [
       {
         dataIndex: 'name',
@@ -93,6 +94,14 @@ export default class CourseDetail extends Component {
         ),
       },
     ];
+    const pagination = {
+      current: currentPage,
+      pageSize: 10,
+      total: 100,
+      onChange: page => {
+        this.setState({ currentPage: page });
+      },
+    };
 
     return (
       <PageHeaderWrapper>
@@ -125,7 +134,21 @@ export default class CourseDetail extends Component {
               </Col>
             </Row>
           </div>
-          <Table columns={columns} dataSource={data} rowKey={record => record.number} />
+          <div className={styles.header}>
+            <Row>
+              <Col span={6}>
+                <Button type="primary">查看考勤详情</Button>
+              </Col>
+              <Col span={6}>总考勤次数：6次</Col>
+              <Col span={6}>平均出席率：86%</Col>
+            </Row>
+          </div>
+          <Table
+            columns={columns}
+            pagination={pagination}
+            dataSource={data}
+            rowKey={record => record.number}
+          />
         </Card>
         <EditCourseDetail
           ref={this.modalForm}

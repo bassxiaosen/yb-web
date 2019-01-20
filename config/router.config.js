@@ -23,6 +23,7 @@ export default [
         path: '/dashboard',
         name: 'dashboard',
         icon: 'dashboard',
+        authority: ['admin'],
         routes: [
           {
             path: '/dashboard/analysis',
@@ -273,6 +274,12 @@ export default [
         name: 'courseDetail',
         icon: 'table',
         hideInMenu: true,
+      },
+      {
+        path: '/adminAnalysis',
+        component: './Admin/AdminAnalysis',
+        name: 'adminAnalysis',
+        icon: 'dashboard',
       },
       {
         component: '404',

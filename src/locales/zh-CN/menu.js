@@ -39,4 +39,5 @@ export default {
   'menu.course': '课程管理',
   'menu.courseDetail': '课程详情',
   'menu.adminAnalysis': '可视化分析',
+  'menu.courseCardList': '课程列表',
 };

@@ -282,6 +282,12 @@ export default [
         icon: 'dashboard',
       },
       {
+        path: '/courseCardList',
+        component: './CourseCardList/CourseCardList',
+        name: 'courseCardList',
+        icon: 'schedule',
+      },
+      {
         component: '404',
       },
     ],

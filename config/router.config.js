@@ -272,7 +272,6 @@ export default [
         path: '/courseManage/courseDetail/:id',
         component: './CourseDetail/CourseDetail',
         name: 'courseDetail',
-        icon: 'table',
         hideInMenu: true,
       },
       {
@@ -286,6 +285,18 @@ export default [
         component: './CourseCardList/CourseCardList',
         name: 'courseCardList',
         icon: 'schedule',
+      },
+      {
+        path: '/courseCardList/teacherCourseDetail/:courseId',
+        component: './CourseCardList/TeacherCourseDetail/CourseDetail',
+        name: 'courseDetail',
+        hideInMenu: true,
+      },
+      {
+        path: '/courseCardList/teacherCourseDetail/:courseId/checkIn',
+        component: './CourseCardList/CheckIn/CheckIn',
+        name: 'checkIn',
+        hideInMenu: true,
       },
       {
         component: '404',

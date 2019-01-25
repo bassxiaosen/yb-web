@@ -15,6 +15,7 @@ import {
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import EditCourseDetail from './EditCourseDetail';
 import styles from './styles.less';
+import router from 'umi/router';
 const Search = Input.Search;
 export default class CourseDetail extends Component {
   constructor(props) {
@@ -56,6 +57,7 @@ export default class CourseDetail extends Component {
 
   render() {
     const { data, currentPage } = this.state;
+    const { match } = this.props;
     const columns = [
       {
         dataIndex: 'name',
@@ -121,14 +123,14 @@ export default class CourseDetail extends Component {
                   添加学生
                 </Button>
               </Col>
-              <Col span={6}>
+              {/* <Col span={6}>
                 <Upload>
                   <Button>
                     <Icon type="upload" />
                     导入学生Excel
                   </Button>
                 </Upload>
-              </Col>
+              </Col> */}
               <Col span={6}>
                 <Search enterButton placeholder="输入学号行搜索" />
               </Col>
@@ -137,7 +139,14 @@ export default class CourseDetail extends Component {
           <div className={styles.header}>
             <Row>
               <Col span={6}>
-                <Button type="primary">查看考勤详情</Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    router.push(`${match.path}/checkIn`);
+                  }}
+                >
+                  前往签到
+                </Button>
               </Col>
               <Col span={6}>总考勤次数：6次</Col>
               <Col span={6}>平均出席率：86%</Col>

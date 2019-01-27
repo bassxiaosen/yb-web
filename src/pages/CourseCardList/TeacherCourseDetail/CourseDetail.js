@@ -142,7 +142,7 @@ export default class CourseDetail extends Component {
                 <Button
                   type="primary"
                   onClick={() => {
-                    router.push(`${match.path}/checkIn`);
+                    router.push(`${match.url}/checkIn`);
                   }}
                 >
                   前往签到

@@ -4,6 +4,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './styles.less';
 import HistorySider from './components/HistorySider/index';
 import CheckInArea from './components/CheckInArea/index';
+import CheckInResult from './components/CheckInResult/index'
 
 const { Sider, Content } = Layout;
 
@@ -12,12 +13,15 @@ export default class CheckIn extends Component {
     super(props);
     const targetTime = new Date().getTime();
     this.state = {
+      isInit: true, //是否初始化了页面，显示倒计时器，初始化endCount的调用，删除了签到记录后，重设这玩意
       isGPS: true,
       newCheckIn: false,
       visibleCheckPage: true,
       checkInQRCodeID: '',
-      checkInMin: 5,
+      checkInMin: 0.05,
       targetTime,
+      //初始时以下数据为空数组，即长度为1
+      checkInStudent: [],
       historyData: [
         {
           id: '1',
@@ -36,6 +40,10 @@ export default class CheckIn extends Component {
           ],
         },
       ],
+
+      //结果页数据
+      noCheckInStudent: [{name: '缺勤1',id :'1'}, {name: '缺勤2', id: '2'}],
+
     };
   }
 
@@ -70,24 +78,42 @@ export default class CheckIn extends Component {
         checkInQRCodeID: 'adgo83760asahiua',
         newCheckIn: true,
         visibleCheckPage: true,
+        checkInStudent: []
       },
       () => console.log(this.state.newCheckIn, this.state.visibleCheckPage)
     );
+    //开启签到后，要定时的发请求给后端，即轮询查找哪些学生已经签到。
+    let num = 1
+    window.checkInTimer = window.setInterval(() => {
+      const { checkInStudent } = this.state
+      this.setState({
+        checkInStudent: checkInStudent.concat({name: `学生${num}`, id: `${num}`})
+      },() => {
+        num = num + 1
+      })
+    }, 2000);
   };
 
   handleEndCheckIn = isManual => {
     //签到结束后，应该去除二维码，显示签到结果，重设二维码
+    window.clearInterval(window.checkInTimer)
     if (isManual) {
-      const targetTime = new Date().getTime();
+      const targetTime = new Date().getTime() - 1000;
       this.setState({
         targetTime,
         newCheckIn: false,
+        visibleCheckPage: false, //签到结束后要去签到结果页看结果
         checkInQRCodeID: '',
       });
       return console.log('手动结束');
+    } else if (isManual === false) {
+      if (this.state.isInit){
+        this.setState({ isInit: false })
+      } else {
+        this.setState({ newCheckIn: false, visibleCheckPage: false, checkInQRCodeID: '' });
+        console.log('自动结束');
+      }
     }
-    this.setState({ newCheckIn: false, checkInQRCodeID: '' });
-    console.log('结束');
   };
 
   render() {
@@ -99,6 +125,8 @@ export default class CheckIn extends Component {
       checkInQRCodeID,
       checkInMin,
       targetTime,
+      checkInStudent,
+      noCheckInStudent
     } = this.state;
     const myStyles = {
       startCheckArea: {
@@ -131,12 +159,14 @@ export default class CheckIn extends Component {
                     >
                       开启新签到
                     </Button>
-                    <Switch
-                      onChange={this.handleChangeGPS}
-                      style={{ marginBottom: '10px' }}
-                      checked={isGPS}
-                    />{' '}
-                    GPS定位
+                    <div style={{display: 'flex', justifyContent: 'center'}}>
+                      <Switch
+                        onChange={this.handleChangeGPS}
+                        style={{ marginBottom: '10px' }}
+                        checked={isGPS}
+                      />{' '}
+                      GPS定位
+                    </div>
                     <InputNumber
                       onChange={this.handleChangeCheckInMin}
                       value={checkInMin}
@@ -158,10 +188,14 @@ export default class CheckIn extends Component {
                 <CheckInArea
                   checkInQRCodeID={checkInQRCodeID}
                   targetTime={targetTime}
+                  checkInStudent={checkInStudent}
                   handleEndCheckIn={this.handleEndCheckIn}
                 />
               ) : (
-                '签到结果页面'
+                <CheckInResult
+                  checkInStudent={checkInStudent}
+                  noCheckInStudent={noCheckInStudent}
+                />
               )}
             </Content>
           </Layout>

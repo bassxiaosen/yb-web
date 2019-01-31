@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import QRCode from 'qrcode.react';
 import CountDown from '@/components/CountDown';
-import { Button } from 'antd';
+import { Button, Row, Col, Avatar } from 'antd';
+import styles from "./CheckInAreaStyle.less"
+
 export default class CheckInArea extends Component {
   constructor(props) {
     super(props);
@@ -9,7 +11,7 @@ export default class CheckInArea extends Component {
   }
 
   render() {
-    const { checkInQRCodeID, targetTime, handleEndCheckIn } = this.props;
+    const { checkInQRCodeID, targetTime, handleEndCheckIn, checkInStudent } = this.props;
     const url = `https://oauth.yiban.cn/code/html?client_id=0ac9a8dfb4fcf79f&redirect_uri=http://f.yiban.cn/iapp318668&state=`;
     return (
       <div>
@@ -18,7 +20,7 @@ export default class CheckInArea extends Component {
             target={targetTime}
             style={{ fontSize: '64px' }}
             onEnd={() => {
-              handleEndCheckIn();
+              handleEndCheckIn(false);
             }}
           />
         </p>
@@ -37,6 +39,19 @@ export default class CheckInArea extends Component {
             </Button>
           </div>
         )}
+        {
+          checkInStudent.length ? (
+            <Row style={{padding: '10px 12px 0'}}>
+              {
+                checkInStudent.map(student => (
+                  <Col style={{marginBottom: '12px'}} key={student.id} span={2}>
+                    <Avatar size="large">{student.name}</Avatar>
+                  </Col>
+                ))
+              }
+            </Row>
+          ) : null
+        }
       </div>
     );
   }

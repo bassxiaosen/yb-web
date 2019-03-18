@@ -272,6 +272,12 @@ export default [
         icon: 'team',
       },
       {
+        path: '/studentManage',
+        component: './Student/StudentManage',
+        name: 'student',
+        icon: 'team',
+      },
+      {
         path: '/courseManage',
         component: './Course/CourseManage',
         name: 'course',

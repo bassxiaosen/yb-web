@@ -98,7 +98,7 @@ class CourseManage extends React.Component {
         ),
       },
       { title: '学院', dataIndex: 'academy', key: 'academy' },
-      { title: '时间', dataIndex: 'time', key: 'number' },
+      { title: '开课时间', dataIndex: 'time', key: 'number' },
       {
         title: '教师',
         dataIndex: 'teacher',

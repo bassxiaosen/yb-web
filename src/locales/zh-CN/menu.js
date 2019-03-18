@@ -39,6 +39,7 @@ export default {
   'menu.account.trigger': '触发报错',
   'menu.account.logout': '退出登录',
   'menu.teacher': '教师管理',
+  'menu.student': '学生管理',
   'menu.course': '课程管理',
   'menu.courseDetail': '课程详情',
   'menu.adminAnalysis': '可视化分析',

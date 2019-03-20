@@ -30,6 +30,8 @@ import styles from './styles.less';
 import EditCourse from './EditCourse';
 
 const { Search } = Input;
+const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 class CourseManage extends React.Component {
   constructor(props) {
@@ -40,19 +42,20 @@ class CourseManage extends React.Component {
           id: '111',
           courseName: 'C语言',
           academy: '医学信息工程学院',
-          time: '2018.09-2019.01',
+          time: [1553074094894, 1553074122679],
           teacher: '某教师',
         },
         {
           id: '222',
           courseName: '中医药概论',
           academy: '基础医学院',
-          time: '2018.09-2019.01',
+          time: [1553074129747, 1553074134422],
           teacher: ['某某教师', '某教师'],
         },
       ],
       visible: false,
       current: {},
+      currentPage: 1,
     };
     this.modalForm = React.createRef();
   }
@@ -70,8 +73,7 @@ class CourseManage extends React.Component {
       //拷贝对象，并将日期转化为Moment对象
       const copy = Object.assign({}, record);
       const { time } = copy;
-      let timeArr = time.split('-');
-      timeArr = timeArr.map(item => moment(item));
+      let timeArr = time.map(item => moment(item));
       copy.time = timeArr;
       ref.setFieldsValue(copy);
       this.setState({ current: copy, visible: true });
@@ -86,8 +88,12 @@ class CourseManage extends React.Component {
     message.success(`删除课程id：${id}`);
   };
 
+  handleSearch = () => {
+    console.log('搜索');
+  };
+
   render() {
-    const { data } = this.state;
+    const { data, currentPage } = this.state;
     const columns = [
       {
         title: '课程名称',
@@ -98,7 +104,19 @@ class CourseManage extends React.Component {
         ),
       },
       { title: '学院', dataIndex: 'academy', key: 'academy' },
-      { title: '开课时间', dataIndex: 'time', key: 'number' },
+      {
+        title: '开课时间',
+        dataIndex: 'time',
+        key: 'number',
+        render: (text, record) => {
+          const { start, end } = record.time;
+          return (
+            <span>
+              {moment(start).format('YYYY/MM/DD')} - {moment(end).format('YYYY/MM/DD')}
+            </span>
+          );
+        },
+      },
       {
         title: '教师',
         dataIndex: 'teacher',
@@ -124,24 +142,55 @@ class CourseManage extends React.Component {
         ),
       },
     ];
+    const pagination = {
+      current: currentPage,
+      pageSize: 10,
+      total: 100,
+      onChange: page => {
+        this.setState({ currentPage: page });
+      },
+    };
 
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
           <div className={styles.header}>
-            <Row>
-              <Col span={8}>
+            <Row gutter={24} style={{ marginBottom: '16px' }}>
+              <Col span={4}>
                 <Button type="primary" onClick={this.openModal.bind(this, {})}>
                   添加课程
                 </Button>
               </Col>
-              <Col span={8}>
-                <Search enterButton placeholder="输入课程名称进行查询" />
+              <Col span={8} offset={2}>
+                <Input placeholder="输入课程名称进行查询" allowClear />
+              </Col>
+              <Col span={8} offset={2}>
+                <Input placeholder="输入教师姓名进行查询" allowClear />
+              </Col>
+            </Row>
+            <Row gutter={24}>
+              <Col span={4}>
+                <Button type="primary" onClick={this.handleSearch}>
+                  搜索
+                </Button>
+              </Col>
+              <Col span={8} offset={2}>
+                <Select style={{ width: '100%' }} allowClear>
+                  <Option value="123asf">医工</Option>
+                </Select>
+              </Col>
+              <Col span={8} offset={2}>
+                <RangePicker />
               </Col>
             </Row>
           </div>
 
-          <Table rowKey={record => record.id} dataSource={data} columns={columns} />
+          <Table
+            pagination={pagination}
+            rowKey={record => record.id}
+            dataSource={data}
+            columns={columns}
+          />
         </Card>
         <EditCourse
           ref={this.modalForm}

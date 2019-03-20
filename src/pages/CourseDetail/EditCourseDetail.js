@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Form, Input, Select, DatePicker } from 'antd';
-
+// 其实是编辑学生
 const RangePicker = DatePicker.RangePicker;
 const FormItem = Form.Item;
 const Option = Select.Option;

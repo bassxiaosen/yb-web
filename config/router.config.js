@@ -53,6 +53,7 @@ export default [
         path: '/form',
         icon: 'form',
         name: 'form',
+        authority: ['admin'],
         routes: [
           {
             path: '/form/basic-form',
@@ -99,6 +100,7 @@ export default [
         path: '/list',
         icon: 'table',
         name: 'list',
+        authority: ['admin'],
         routes: [
           {
             path: '/list/table-list',
@@ -147,6 +149,7 @@ export default [
         path: '/profile',
         name: 'profile',
         icon: 'profile',
+        authority: ['admin'],
         routes: [
           // profile
           {
@@ -172,6 +175,7 @@ export default [
         name: 'result',
         icon: 'check-circle-o',
         path: '/result',
+        authority: ['admin'],
         routes: [
           // result
           {
@@ -273,18 +277,21 @@ export default [
         component: './Teacher/TeacherManage',
         name: 'teacher',
         icon: 'team',
+        authority: ['admin'],
       },
       {
         path: '/studentManage',
         component: './Student/StudentManage',
         name: 'student',
         icon: 'team',
+        authority: ['admin'],
       },
       {
         path: '/courseManage',
         component: './Course/CourseManage',
         name: 'course',
         icon: 'table',
+        authority: ['admin'],
       },
       {
         path: '/courseManage/courseDetail/:id',

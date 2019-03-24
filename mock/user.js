@@ -2,7 +2,7 @@
 export default {
   // 支持值为 Object 和 Array
   'GET /api/currentUser': {
-    name: 'Serati Ma',
+    name: '广中医',
     avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
     userid: '00000001',
     email: 'antdesign@alipay.com',
@@ -87,6 +87,14 @@ export default {
         status: 'ok',
         type,
         currentAuthority: 'user',
+      });
+      return;
+    }
+    if (password === 'ant.design' && userName === 'teacher') {
+      res.send({
+        status: 'ok',
+        type,
+        currentAuthority: 'teacher',
       });
       return;
     }

@@ -28,6 +28,7 @@ import styles from './TeacherManage.less';
 import EditTeacher from './EditTeacher';
 
 const { Search } = Input;
+const { Option } = Select
 
 class TeacherManage extends React.Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class TeacherManage extends React.Component {
       ],
       visible: false,
       current: {},
+      currentPage: 1,
     };
     this.modalForm = React.createRef();
   }
@@ -75,8 +77,12 @@ class TeacherManage extends React.Component {
     message.success(`删除教师id：${id}`);
   };
 
+  handleSearch = () => {
+    console.log('搜索');
+  };
+
   render() {
-    const { data } = this.state;
+    const { data, currentPage } = this.state;
     const columns = [
       { title: '姓名', dataIndex: 'name', key: 'name' },
       { title: '学院', dataIndex: 'academy', key: 'academy' },
@@ -99,24 +105,50 @@ class TeacherManage extends React.Component {
         ),
       },
     ];
+    const pagination = {
+      current: currentPage,
+      pageSize: 10,
+      total: 100,
+      onChange: page => {
+        this.setState({ currentPage: page });
+      },
+    };
 
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
           <div className={styles.header}>
-            <Row>
-              <Col span={8}>
+            <Row gutter={24} style={{ marginBottom: '16px' }}>
+              <Col span={4}>
                 <Button type="primary" onClick={this.openModal.bind(this, {})}>
                   添加教师
                 </Button>
               </Col>
-              <Col span={8}>
-                <Search enterButton placeholder="输入姓名或工号进行查询" />
+              <Col span={8} offset={2}>
+                <Input enterButton placeholder="输入姓名进行查询" />
+              </Col>
+              <Col span={8} offset={2}>
+                <Input enterButton placeholder="输入工号进行查询" />
+              </Col>
+            </Row>
+            <Row gutter={24}>
+              <Col span={4}>
+                <Button type="primary" onClick={this.handleSearch}>
+                  搜索
+                </Button>
+              </Col>
+              <Col span={8} offset={2}>
+                <Select style={{ width: '100%' }} allowClear placeholder="选择学院">
+                  <Option value="123asf">医工</Option>
+                </Select>
+              </Col>
+              <Col span={8} offset={2}>
+                <Input enterButton placeholder="输入课程名称进行查询" />
               </Col>
             </Row>
           </div>
 
-          <Table rowKey={record => record.id} dataSource={data} columns={columns} />
+          <Table rowKey={record => record.id} dataSource={data} columns={columns} pagination={pagination}/>
         </Card>
         <EditTeacher
           ref={this.modalForm}

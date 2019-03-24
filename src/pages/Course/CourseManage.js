@@ -175,7 +175,7 @@ class CourseManage extends React.Component {
                 </Button>
               </Col>
               <Col span={8} offset={2}>
-                <Select style={{ width: '100%' }} allowClear>
+                <Select style={{ width: '100%' }} allowClear placeholder="选择学院">
                   <Option value="123asf">医工</Option>
                 </Select>
               </Col>

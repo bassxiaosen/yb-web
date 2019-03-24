@@ -36,6 +36,7 @@ class StudentManage extends React.Component {
         },
       ],
       current: {},
+      currentPage: 1,
     };
     this.modalForm = React.createRef();
   }
@@ -58,8 +59,12 @@ class StudentManage extends React.Component {
     message.success(`删除学生id：${id}`);
   };
 
+  handleSearch = () => {
+    console.log('搜索');
+  };
+
   render() {
-    const { data } = this.state;
+    const { data, currentPage } = this.state;
     const columns = [
       { title: '姓名', dataIndex: 'name', key: 'name' },
       { title: '学院', dataIndex: 'academy', key: 'academy' },
@@ -83,12 +88,20 @@ class StudentManage extends React.Component {
         ),
       },
     ];
+    const pagination = {
+      current: currentPage,
+      pageSize: 10,
+      total: 100,
+      onChange: page => {
+        this.setState({ currentPage: page });
+      },
+    };
 
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
           <div className={styles.header}>
-            <Row>
+            <Row style={{ marginBottom: '16px' }} gutter={24}>
               <Col span={4}>
                 <Button type="primary" onClick={this.openModal.bind(this, {})}>
                   添加学生
@@ -102,7 +115,18 @@ class StudentManage extends React.Component {
                 </Upload>
               </Col>
               <Col span={6}>
-                <Search enterButton placeholder="输入姓名或学号进行查询" />
+                <Input enterButton placeholder="输入姓名进行查询" />
+              </Col>
+              <Col span={8} offset={2}>
+                <Input placeholder="请输入学号进行查询"/>
+              </Col>
+            </Row>
+            <Row gutter={24}>
+              <Col span={4}>
+                <Button type="primary" onClick={this.handleSearch}>搜索</Button>
+              </Col>
+              <Col span={10}>
+                <Input placeholder="请输入专业名称进行查询"/>
               </Col>
               <Col span={8} offset={2}>
                 <Select style={{ width: '100%' }} placeholder="选择学院">
@@ -111,7 +135,7 @@ class StudentManage extends React.Component {
               </Col>
             </Row>
           </div>
-          <Table rowKey={record => record.studentId} dataSource={data} columns={columns} />
+          <Table rowKey={record => record.studentId} dataSource={data} columns={columns} pagination={pagination}/>
         </Card>
         <EditStudent
           ref={this.modalForm}

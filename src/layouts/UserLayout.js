@@ -30,7 +30,7 @@ const links = [
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+    Copyright <Icon type="copyright" /> 2019 广州中医药大学
   </Fragment>
 );
 
@@ -55,18 +55,20 @@ class UserLayout extends Component {
     return (
       <DocumentTitle title={getPageTitle(pathname, breadcrumbNameMap)}>
         <div className={styles.container}>
-          <div className={styles.lang}>
+          {/* <div className={styles.lang}>
             <SelectLang />
-          </div>
+          </div> */}
           <div className={styles.content}>
             <div className={styles.top}>
               <div className={styles.header}>
                 <Link to="/">
-                  <img alt="logo" className={styles.logo} src={logo} />
-                  <span className={styles.title}>Ant Design</span>
+                  {/* <img alt="logo" className={styles.logo} src={logo} /> */}
+                  <span className={styles.title}>广州中医药大学课程考勤系统</span>
                 </Link>
               </div>
-              <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+              <div className={styles.desc}>
+                {/* Ant Design 是西湖区最具影响力的 Web 设计规范 */}
+              </div>
             </div>
             {children}
           </div>

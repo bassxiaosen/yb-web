@@ -1,5 +1,5 @@
 #环境要求
-较高版本的nodejs版本，且要带有较高版本npm包管理器，易班nodejs > 7，npm > 4
+较高版本的nodejs版本，且要带有较高版本npm包管理器，一般nodejs > 7，npm > 4
 
 ## 安装
 ```

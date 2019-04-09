@@ -18,7 +18,7 @@ export default class CheckIn extends Component {
       newCheckIn: false,
       visibleCheckPage: true,
       checkInQRCodeID: '',
-      checkInMin: 0.05,
+      checkInMin: 5,
       targetTime,
       //初始时以下数据为空数组，即长度为1
       checkInStudent: [],
@@ -81,7 +81,7 @@ export default class CheckIn extends Component {
       },
       () => console.log(this.state.newCheckIn, this.state.visibleCheckPage)
     );
-    //开启签到后，要定时的发请求给后端，即轮询查找哪些学生已经签到。
+    //开启签到后，要定时的发请求给后端，即轮询查找哪些学生已经签到。 这里是通过定时器造假数据
     let num = 1;
     window.checkInTimer = window.setInterval(() => {
       const { checkInStudent } = this.state;

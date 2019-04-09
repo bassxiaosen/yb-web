@@ -14,7 +14,7 @@ export default class CheckInResult extends Component {
     return (
       <div>
         <section className={styles.resultData}>
-          <p>本次签到开启与 2019-01-30 15:35:24</p>
+          <p>本次签到开启于 2019-01-30 15:35:24</p>
           <Row>
             <Col className={styles.updown} span={8}>
               <span>出勤</span>

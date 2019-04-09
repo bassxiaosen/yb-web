@@ -23,9 +23,9 @@ export default class CourseDetail extends Component {
     this.state = {
       data: [
         {
-          id: '2015081055',
-          name: '某某某',
-          number: '2015081000',
+          id: '2015081004',
+          name: '蔡宇森',
+          number: '2015081004',
           academy: '医学信息工程学院',
           subject: '计算机科学与技术',
         },
@@ -149,7 +149,7 @@ export default class CourseDetail extends Component {
                 </Button>
               </Col>
               <Col span={6}>总考勤次数：6次</Col>
-              <Col span={6}>平均出席率：86%</Col>
+              <Col span={6}>平均出席率：83%</Col>
             </Row>
           </div>
           <Table

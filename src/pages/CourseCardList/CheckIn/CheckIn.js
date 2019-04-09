@@ -4,7 +4,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './styles.less';
 import HistorySider from './components/HistorySider/index';
 import CheckInArea from './components/CheckInArea/index';
-import CheckInResult from './components/CheckInResult/index'
+import CheckInResult from './components/CheckInResult/index';
 
 const { Sider, Content } = Layout;
 
@@ -42,8 +42,7 @@ export default class CheckIn extends Component {
       ],
 
       //结果页数据
-      noCheckInStudent: [{name: '缺勤1',id :'1'}, {name: '缺勤2', id: '2'}],
-
+      noCheckInStudent: [{ name: '缺勤1', id: '1' }, { name: '缺勤2', id: '2' }],
     };
   }
 
@@ -78,25 +77,28 @@ export default class CheckIn extends Component {
         checkInQRCodeID: 'adgo83760asahiua',
         newCheckIn: true,
         visibleCheckPage: true,
-        checkInStudent: []
+        checkInStudent: [],
       },
       () => console.log(this.state.newCheckIn, this.state.visibleCheckPage)
     );
     //开启签到后，要定时的发请求给后端，即轮询查找哪些学生已经签到。
-    let num = 1
+    let num = 1;
     window.checkInTimer = window.setInterval(() => {
-      const { checkInStudent } = this.state
-      this.setState({
-        checkInStudent: checkInStudent.concat({name: `学生${num}`, id: `${num}`})
-      },() => {
-        num = num + 1
-      })
+      const { checkInStudent } = this.state;
+      this.setState(
+        {
+          checkInStudent: checkInStudent.concat({ name: `学生${num}`, id: `${num}` }),
+        },
+        () => {
+          num = num + 1;
+        }
+      );
     }, 2000);
   };
 
   handleEndCheckIn = isManual => {
     //签到结束后，应该去除二维码，显示签到结果，重设二维码
-    window.clearInterval(window.checkInTimer)
+    window.clearInterval(window.checkInTimer);
     if (isManual) {
       const targetTime = new Date().getTime() - 1000;
       this.setState({
@@ -107,8 +109,8 @@ export default class CheckIn extends Component {
       });
       return console.log('手动结束');
     } else if (isManual === false) {
-      if (this.state.isInit){
-        this.setState({ isInit: false })
+      if (this.state.isInit) {
+        this.setState({ isInit: false });
       } else {
         this.setState({ newCheckIn: false, visibleCheckPage: false, checkInQRCodeID: '' });
         console.log('自动结束');
@@ -126,7 +128,7 @@ export default class CheckIn extends Component {
       checkInMin,
       targetTime,
       checkInStudent,
-      noCheckInStudent
+      noCheckInStudent,
     } = this.state;
     const myStyles = {
       startCheckArea: {
@@ -159,13 +161,13 @@ export default class CheckIn extends Component {
                     >
                       开启新签到
                     </Button>
-                    <div style={{display: 'flex', justifyContent: 'center'}}>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
                       <Switch
                         onChange={this.handleChangeGPS}
                         style={{ marginBottom: '10px' }}
                         checked={isGPS}
                       />{' '}
-                      GPS定位
+                      启用定位
                     </div>
                     <InputNumber
                       onChange={this.handleChangeCheckInMin}

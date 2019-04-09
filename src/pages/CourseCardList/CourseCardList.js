@@ -8,9 +8,21 @@ export default class CourseCardList extends Component {
     this.state = {
       coursesArr: [
         { id: 1, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
-        { id: 2, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
-        { id: 3, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
-        { id: 4, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
+        {
+          id: 2,
+          name: 'C++程序设计',
+          totalNum: '65',
+          class: '15医工计算机',
+          date: '2018.9-2019.1',
+        },
+        {
+          id: 3,
+          name: 'Java程序设计',
+          totalNum: '65',
+          class: '15医工计算机',
+          date: '2018.9-2019.1',
+        },
+        { id: 4, name: 'C#程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
         { id: 5, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
         { id: 6, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
         { id: 7, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },

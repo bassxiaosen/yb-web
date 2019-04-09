@@ -22,9 +22,9 @@ export default class CourseDetail extends Component {
     this.state = {
       data: [
         {
-          id: '2015081055',
-          name: '某某某',
-          number: '2015081000',
+          id: '2015081004',
+          name: '蔡宇森',
+          number: '2015081004',
           academy: '医学信息工程学院',
           subject: '计算机科学与技术',
         },
@@ -108,10 +108,10 @@ export default class CourseDetail extends Component {
         <Card>
           <div className={styles.header}>
             <Row>
-              <Col span={6}>课程名称：HTML5程序设计</Col>
+              <Col span={6}>课程名称：C语言</Col>
               <Col span={6}>任课教师：某教师</Col>
-              <Col span={6}>开课时间：2018-9——2019-1</Col>
-              <Col span={6}>课程总学生人数：65人</Col>
+              <Col span={6}>开课时间：2018/9/1--2019/1/10</Col>
+              <Col span={6}>课程总学生人数：1人</Col>
             </Row>
           </div>
           <div className={styles.header}>
@@ -140,7 +140,7 @@ export default class CourseDetail extends Component {
                 <Button type="primary">查看考勤详情</Button>
               </Col>
               <Col span={6}>总考勤次数：6次</Col>
-              <Col span={6}>平均出席率：86%</Col>
+              <Col span={6}>平均出席率：83%</Col>
             </Row>
           </div>
           <Table

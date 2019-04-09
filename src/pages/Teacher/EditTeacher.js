@@ -60,7 +60,9 @@ class EditTeacher extends React.Component {
             {getFieldDecorator('jobNumber', { rules: [{ required: true }] })(<Input />)}
           </FormItem>
           <FormItem label="初始密码">
-            {getFieldDecorator('password', { rules: [{ required: true }] })(<Input />)}
+            {getFieldDecorator('password', { rules: [{ required: true }] })(
+              <Input type="password" />
+            )}
           </FormItem>
         </Form>
       </Modal>

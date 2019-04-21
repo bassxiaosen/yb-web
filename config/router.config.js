@@ -24,8 +24,9 @@ export default [
     Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/dashboard/analysis' },
-      {
+      { path: '/', redirect: '/adminAnalysis' },
+      // dashboards 本系统不用
+      /*{
         path: '/dashboard',
         name: 'dashboard',
         icon: 'dashboard',
@@ -47,9 +48,9 @@ export default [
             component: './Dashboard/Workplace',
           },
         ],
-      },
-      // forms
-      {
+      },*/
+      // forms 表单 本系统不用
+      /*{
         path: '/form',
         icon: 'form',
         name: 'form',
@@ -94,9 +95,9 @@ export default [
             component: './Forms/AdvancedForm',
           },
         ],
-      },
-      // list
-      {
+      },*/
+      // list 列表页 本系统不用
+      /*{
         path: '/list',
         icon: 'table',
         name: 'list',
@@ -144,52 +145,57 @@ export default [
             ],
           },
         ],
-      },
-      {
-        path: '/profile',
-        name: 'profile',
-        icon: 'profile',
-        authority: ['admin'],
-        routes: [
-          // profile
-          {
-            path: '/profile/basic',
-            name: 'basic',
-            component: './Profile/BasicProfile',
-          },
-          {
-            path: '/profile/basic/:id',
-            name: 'basic',
-            hideInMenu: true,
-            component: './Profile/BasicProfile',
-          },
-          {
-            path: '/profile/advanced',
-            name: 'advanced',
-            authority: ['admin'],
-            component: './Profile/AdvancedProfile',
-          },
-        ],
-      },
-      {
-        name: 'result',
-        icon: 'check-circle-o',
-        path: '/result',
-        authority: ['admin'],
-        routes: [
-          // result
-          {
-            path: '/result/success',
-            name: 'success',
-            component: './Result/Success',
-          },
-          { path: '/result/fail', name: 'fail', component: './Result/Error' },
-        ],
-      },
+      },*/
+      // 详情页 本系统不用
+      // {
+      //   path: '/profile',
+      //   name: 'profile',
+      //   icon: 'profile',
+      //   authority: ['admin'],
+      //   routes: [
+      //     // profile
+      //     {
+      //       path: '/profile/basic',
+      //       name: 'basic',
+      //       component: './Profile/BasicProfile',
+      //     },
+      //     {
+      //       path: '/profile/basic/:id',
+      //       name: 'basic',
+      //       hideInMenu: true,
+      //       component: './Profile/BasicProfile',
+      //     },
+      //     {
+      //       path: '/profile/advanced',
+      //       name: 'advanced',
+      //       authority: ['admin'],
+      //       component: './Profile/AdvancedProfile',
+      //     },
+      //   ],
+      // },
+      // 结果页面 本系统不用
+      // {
+      //   name: 'result',
+      //   icon: 'check-circle-o',
+      //   path: '/result',
+      //   authority: ['admin'],
+      //   routes: [
+      //     // result
+      //     {
+      //       path: '/result/success',
+      //       name: 'success',
+      //       component: './Result/Success',
+      //     },
+      //     { path: '/result/fail', name: 'fail', component: './Result/Error' },
+      //   ],
+      // },
+      // 异常页 本系统用
       {
         name: 'exception',
         icon: 'warning',
         path: '/exception',
+        authority: ['admin', 'teacher', 'student'],
+        hideInMenu: true,
         routes: [
           // exception
           {
@@ -215,10 +221,12 @@ export default [
           },
         ],
       },
+      // 账户页 本系统用来修改密码
       {
         name: 'account',
         icon: 'user',
         path: '/account',
+        authority: ['teacher', 'admin', 'student'],
         routes: [
           {
             path: '/account/center',
@@ -272,6 +280,15 @@ export default [
           },
         ],
       },
+      // 首页数据可视化页面 教师以及管理员身份
+      {
+        path: '/adminAnalysis',
+        component: './Admin/AdminAnalysis',
+        name: 'adminAnalysis',
+        authority: ['admin', 'teacher', 'student'],
+        icon: 'dashboard',
+      },
+      // 教师管理页面 管理员身份
       {
         path: '/teacherManage',
         component: './Teacher/TeacherManage',
@@ -279,6 +296,7 @@ export default [
         icon: 'team',
         authority: ['admin'],
       },
+      // 学生管理页面 管理员身份
       {
         path: '/studentManage',
         component: './Student/StudentManage',
@@ -287,40 +305,62 @@ export default [
         authority: ['admin'],
       },
       {
+        path: '/classsManage',
+        component: './Class/ClassManage',
+        name: 'class',
+        icon: 'table',
+        authority: ['admin'],
+      },
+      // 课程管理页面 管理员身份
+      {
         path: '/courseManage',
         component: './Course/CourseManage',
         name: 'course',
         icon: 'table',
         authority: ['admin'],
       },
+      // 课程管理详情页 管理员身份
       {
         path: '/courseManage/courseDetail/:id',
         component: './CourseDetail/CourseDetail',
         name: 'courseDetail',
         hideInMenu: true,
       },
-      {
-        path: '/adminAnalysis',
-        component: './Admin/AdminAnalysis',
-        name: 'adminAnalysis',
-        icon: 'dashboard',
-      },
+      // 教师课程列表与签到
       {
         path: '/courseCardList',
         component: './CourseCardList/CourseCardList',
         name: 'courseCardList',
+        authority: ['teacher'],
         icon: 'schedule',
       },
       {
         path: '/courseCardList/teacherCourseDetail/:courseId',
         component: './CourseCardList/TeacherCourseDetail/CourseDetail',
         name: 'courseDetail',
+        authority: ['teacher'],
         hideInMenu: true,
       },
       {
         path: '/courseCardList/teacherCourseDetail/:courseId/checkIn',
         component: './CourseCardList/CheckIn/CheckIn',
         name: 'checkIn',
+        authority: ['teacher'],
+        hideInMenu: true,
+      },
+      // 学生课程列表与课程详情
+      {
+        path: '/courseCardListStu',
+        component: './CourseCardListStu/CourseCardList',
+        name: 'courseCardList',
+        authority: ['student'],
+        icon: 'schedule',
+      },
+      {
+        path: '/courseCardListStu/studentCourseDetail/:courseId',
+        component: './CourseCardListStu/StudentCourseDetail/CourseDetail',
+        name: 'courseDetail',
+        authority: ['student'],
         hideInMenu: true,
       },
       {

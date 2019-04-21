@@ -25,7 +25,7 @@ export default class CheckIn extends Component {
       historyData: [
         {
           id: '1',
-          date: '2019-1-27',
+          date: '2019-04-15',
           data: [
             { checkInId: '1hasaggjiuia9835', time: '14:33', checkInNum: 30, rate: '50%' },
             { checkInId: '2ashihgayg875478', time: '17:33', checkInNum: 32, rate: '52%' },
@@ -33,7 +33,7 @@ export default class CheckIn extends Component {
         },
         {
           id: '2',
-          date: '2019-1-24',
+          date: '2019-04-13',
           data: [
             { checkInId: '1iausgiugag786387', time: '09:33', checkInNum: 60, rate: '100%' },
             { checkInId: '2ajhhguiauh845934', time: '13:20', checkInNum: 50, rate: '83%' },

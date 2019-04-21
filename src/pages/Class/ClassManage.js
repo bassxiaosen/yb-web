@@ -1,40 +1,21 @@
-import React from 'react';
-import {
-  Table,
-  message,
-  Button,
-  Input,
-  Select,
-  Row,
-  Col,
-  Card,
-  Upload,
-  Icon,
-  Modal,
-  Divider,
-  Popconfirm,
-} from 'antd';
-import styles from './StudentManage.less';
+import React from "react"
+import {Table, Modal, message, Button, Input, Select, Row, Col, Card, Upload, Icon, Divider, Popconfirm} from "antd"
+import styles from './styles.less';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import EditStudent from './EditStudent';
+import EditClass from './EditClass';
 
-const Search = Input.Search;
 const Option = Select.Option;
 
-class StudentManage extends React.Component {
+class ClassManage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
-      data: [
-        {
-          name: '蔡宇森',
-          studentId: '2015081004',
-          academy: '医学信息工程学院',
-          entryYear: '2015',
-          speciality: '计算机科学与技术',
-        },
-      ],
+      data: [{
+        className: '15医工计算机4',
+      }, {
+        className: '15医工医工4'
+      }],
       current: {},
       currentPage: 1,
     };
@@ -66,10 +47,9 @@ class StudentManage extends React.Component {
   render() {
     const { data, currentPage } = this.state;
     const columns = [
-      { title: '学生学号', dataIndex: 'studentId', key: 'studentId' },
-      { title: '学生姓名', dataIndex: 'name', key: 'name' },
-      { title: '学生所属学院', dataIndex: 'academy', key: 'academy' },
-      { title: '学生班级', dataIndex: 'speciality', key: 'speciality' },
+      { title: '班级名称', dataIndex: 'className', key: 'className' },
+      { title: '班级课程', key: 'classCourses', render: () => ( <a>查看课程</a> ) },
+      { title: '班级学生', key: 'classStudents', render: () => ( <a>查看学生</a> ) },
       {
         title: '操作',
         key: 'operation',
@@ -78,8 +58,8 @@ class StudentManage extends React.Component {
             <a onClick={this.openModal.bind(this, record)}>修改</a>
             <Divider type="vertical" />
             <Popconfirm
-              title="确认删除此学生？"
-              onConfirm={this.onClickDelete.bind(this, record.studentId)}
+              title="确认删除此课程？"
+              onConfirm={this.onClickDelete.bind(this, record.classId)}
             >
               <a href="javascript:;">删除</a>
             </Popconfirm>
@@ -101,12 +81,12 @@ class StudentManage extends React.Component {
         <Card bordered={false}>
           <div className={styles.header}>
             <Row style={{ marginBottom: '16px' }} gutter={24}>
-              <Col span={4}>
+              <Col span={6}>
                 <Button type="primary" onClick={this.openModal.bind(this, {})}>
-                  添加学生
+                  添加班级
                 </Button>
               </Col>
-              <Col span={4}>
+              <Col span={6}>
                 <Upload>
                   <Button>
                     <Icon type="upload" /> 批量导入
@@ -114,29 +94,18 @@ class StudentManage extends React.Component {
                 </Upload>
               </Col>
               <Col span={6}>
-                <Input enterButton placeholder="输入姓名进行查询" />
+                <Input enterButton placeholder="输入班级名称查询" />
               </Col>
-              <Col span={8} offset={2}>
-                <Input placeholder="请输入学号进行查询"/>
-              </Col>
-            </Row>
-            <Row gutter={24}>
-              <Col span={4}>
-                <Button type="primary" onClick={this.handleSearch}>搜索</Button>
-              </Col>
-              <Col span={10}>
-                <Input placeholder="请输入学生班级进行查询"/>
-              </Col>
-              <Col span={8} offset={2}>
-                <Select style={{ width: '100%' }} placeholder="选择学院">
-                  <Option value="1">医学信息工程学院</Option>
-                </Select>
+              <Col span={6}>
+                <Button type="primary" onClick={this.handleSearch}>
+                  搜索
+                </Button>
               </Col>
             </Row>
           </div>
           <Table rowKey={record => record.studentId} dataSource={data} columns={columns} pagination={pagination}/>
         </Card>
-        <EditStudent
+        <EditClass
           ref={this.modalForm}
           handleOk={this.handleOk}
           handleCancel={this.handleCancel}
@@ -148,4 +117,5 @@ class StudentManage extends React.Component {
   }
 }
 
-export default StudentManage;
+export default ClassManage;
+

@@ -45,4 +45,5 @@ export default {
   'menu.adminAnalysis': '可视化分析',
   'menu.courseCardList': '课程列表',
   'menu.checkIn': '课程签到',
+  'menu.class': '班级管理'
 };

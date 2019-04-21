@@ -98,6 +98,14 @@ export default {
       });
       return;
     }
+    if (password === 'xiaosa' && userName === '2015081004') {
+      res.send({
+        status: 'ok',
+        type,
+        currentAuthority: 'student',
+      });
+      return;
+    }
     res.send({
       status: 'error',
       type,

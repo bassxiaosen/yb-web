@@ -1,10 +1,10 @@
 import React from 'react';
-import { Modal, Form, Input, Select } from 'antd';
+import { Modal, Form, Input, Select, Upload, Button, Icon } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 @Form.create()
-class EditStudent extends React.Component {
+class EditTeacher extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -30,23 +30,25 @@ class EditStudent extends React.Component {
       { id: '1', name: '医学信息工程学院', value: '医工' },
       { id: '2', name: '中医药学院', value: '中医药' },
     ];
+    const props = {
+      beforeUpload: (file) => {
+        return false;
+      }
+    }
 
     return (
       <Modal
-        title={`${this.props.current.name ? '修改' : '添加'}学生`}
+        title={`${this.props.current.className ? '修改' : '添加'}班级`}
         visible={visible}
         onCancel={handleCancel}
         onOk={this.handleOk}
         afterClose={() => resetFields()}
       >
         <Form>
-          <FormItem label="学生学号">
-            {getFieldDecorator('studentId', { rules: [{ required: true, message: '请输入学号' }] })(<Input />)}
+          <FormItem label="班级名称">
+            {getFieldDecorator('className', { rules: [{ required: true, message: '请输入班级名称' }] })(<Input />)}
           </FormItem>
-          <FormItem label="学生姓名">
-            {getFieldDecorator('name', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
-          </FormItem>
-          <FormItem label="学院">
+          <FormItem label="班级所属学院">
             {getFieldDecorator('academy', { rules: [{ required: true, message: '请选择学院' }] })(
               <Select>
                 {academy.map((item, index) => {
@@ -59,26 +61,23 @@ class EditStudent extends React.Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="班级">
-            {getFieldDecorator('speciality', { rules: [{ required: true, message: '请输入班级' }] })(
-              <Select>
-                {academy.map((item, index) => {
-                  return (
-                    <Option key={index} value={item.value}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="学生密码">
-            {getFieldDecorator('password', { rules: [{ required: true, message: '请输入密码' }] })(<Input />)}
-          </FormItem>
+          {/* <FormItem label="导入学生信息">
+            {
+              getFieldDecorator('sutentInfo',
+                { rules: [{ required: true, message: '请上传文件' }] }
+              )(
+                <Upload {...props}>
+                  <Button>
+                    <Icon type="upload" /> 上传文件
+                  </Button>
+                </Upload>
+              )
+            }
+          </FormItem> */}
         </Form>
       </Modal>
     );
   }
 }
 
-export default EditStudent;
+export default EditTeacher;

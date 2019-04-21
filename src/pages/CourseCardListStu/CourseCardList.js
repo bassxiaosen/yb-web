@@ -10,34 +10,27 @@ export default class CourseCardList extends Component {
     this.state = {
       currentPage: 1,
       coursesArr: [
-        { id: 1, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上',teacher: '张三',
-        academy: '医学信息工程学院' },
+        { id: 1, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
         {
           id: 2,
           name: 'C++程序设计',
           totalNum: '65',
           class: '15医工计算机',
-          date: '2015下',
-          teacher: '李四',
-          academy: '医学信息工程学院'
+          date: '2018.9-2019.1',
+          teacher: '张三',
+          academy: '医工'
         },
         {
           id: 3,
           name: 'Java程序设计',
           totalNum: '65',
           class: '15医工计算机',
-          date: '2016上',
-          teacher: '王五',
-          academy: '医学信息工程学院'
+          date: '2018.9-2019.1',
         },
-        { id: 4, name: 'C#程序设计', totalNum: '65', class: '15医工计算机', date: '2016下', teacher: '王五',
-        academy: '医学信息工程学院' },
-        { id: 5, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上', teacher: '王五',
-        academy: '医学信息工程学院' },
-        { id: 6, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上', teacher: '王五',
-        academy: '医学信息工程学院' },
-        { id: 7, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上', teacher: '王五',
-        academy: '医学信息工程学院' },
+        { id: 4, name: 'C#程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
+        { id: 5, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
+        { id: 6, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
+        { id: 7, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2018.9-2019.1' },
       ],
     };
   }
@@ -66,13 +59,10 @@ export default class CourseCardList extends Component {
         <div style={{ marginBottom: '24px' }}>
             <Row style={{ marginBottom: '16px' }} gutter={24}>
               <Col span={5}>
-                <Input enterButton placeholder="输入课程名称查询" />
+                <Input placeholder="输入课程名称查询" />
               </Col>
               <Col span={5}>
-                <Input enterButton placeholder="输入课程班级查询" />
-              </Col>
-              <Col span={5}>
-                <Input enterButton placeholder="输入任教老师查询" />
+                <Input placeholder="输入任教老师查询" />
               </Col>
               <Col span={5}>
                 <Select style={{ width: '100%' }} placeholder="选择学院">
@@ -89,7 +79,7 @@ export default class CourseCardList extends Component {
               <Col key={item.id} span={6}>
                 <Card
                   onClick={() => {
-                    router.push(`${match.path}/teacherCourseDetail/${item.id}`);
+                    router.push(`${match.path}/studentCourseDetail/${item.id}`);
                   }}
                   style={cardStyle}
                   hoverable

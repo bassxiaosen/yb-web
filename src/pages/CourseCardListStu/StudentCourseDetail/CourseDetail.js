@@ -13,7 +13,6 @@ import {
   message,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import EditCourseDetail from './EditCourseDetail';
 import styles from './styles.less';
 import router from 'umi/router';
 import { ChartCard } from "@/components/Charts"
@@ -41,10 +40,9 @@ export default class CourseDetail extends Component {
     this.state = {
       data: [
         {
-          id: '2015081004',
-          name: '蔡宇森',
-          number: '2015081004',
-          academy: '医学信息工程学院',
+          clockTime: '2019-04-10 15:00',
+          isGPS: '是',
+          status: '已签到',
         },
       ],
       visible: false,
@@ -81,33 +79,41 @@ export default class CourseDetail extends Component {
     const { match } = this.props;
     const dataV = [
       {
-        year: "2019-4-15",
-        value: 85
+        year: "1991",
+        value: 3
       },
       {
-        year: "2019-4-16",
-        value: 90
+        year: "1992",
+        value: 4
       },
       {
-        year: "2019-4-17",
-        value: 95
+        year: "1993",
+        value: 3.5
       },
       {
-        year: "2019-4-18",
-        value: 90
+        year: "1994",
+        value: 5
       },
       {
-        year: "2019-4-19",
-        value: 90
+        year: "1995",
+        value: 4.9
       },
       {
-        year: "2019-4-20",
-        value: 85
+        year: "1996",
+        value: 6
       },
       {
-        year: "2019-4-21",
-        value: 80
+        year: "1997",
+        value: 7
       },
+      {
+        year: "1998",
+        value: 9
+      },
+      {
+        year: "1999",
+        value: 13
+      }
     ];
     const cols = {
       value: {
@@ -119,19 +125,19 @@ export default class CourseDetail extends Component {
     };
     const columns = [
       {
-        dataIndex: 'number',
-        key: 'number',
-        title: '学生学号',
+        dataIndex: 'clockTime',
+        key: 'clockTime',
+        title: '考勤时间',
       },
       {
-        dataIndex: 'name',
-        key: 'name',
-        title: '学生姓名',
+        dataIndex: 'isGPS',
+        key: 'isGPS',
+        title: '是否开启定位',
       },
       {
-        dataIndex: 'academy',
-        key: 'academy',
-        title: '学生所属学院',
+        dataIndex: 'status',
+        key: 'status',
+        title: '考勤状态',
       },
       // {
       //   dataIndex: 'subject',
@@ -169,7 +175,7 @@ export default class CourseDetail extends Component {
         <Card>
           <div className={styles.header}>
             <Row>
-              <Col span={6}>课程名称：C语言程序设计</Col>
+              <Col span={6}>课程名称：C语言</Col>
               <Col span={6}>任课教师：张三</Col>
               <Col span={6}>开课时间：2015上</Col>
               <Col span={6}>课程总学生人数：医学信息工程学院</Col>
@@ -180,22 +186,13 @@ export default class CourseDetail extends Component {
               <Col span={6}>课程总人数：85人</Col>
               <Col span={6}>上课班级：15医工计算机4</Col>
               <Col span={6}>总考勤次数：10次</Col>
-              <Col span={6}>课程平均出勤率：90%</Col>
+              <Col span={6}>个人出勤次数：9次</Col>
             </Row>
           </div>
           <div className={styles.header}>
             <Row>
-              <Col span={24}>
-                <Button
-                  style={{width: '100%'}}
-                  type="primary"
-                  onClick={() => {
-                    router.push(`${match.url}/checkIn`);
-                  }}
-                >
-                  前往签到
-                </Button>
-              </Col>
+              <Col span={6}>课程平均出勤率：90%</Col>
+              <Col span={6}>个人出勤率：90%</Col>
             </Row>
           </div>
           <div className={styles.header}>
@@ -236,21 +233,8 @@ export default class CourseDetail extends Component {
               </Col>
             </Row>
           </div>
-          <div className={styles.header}>
+          {/* <div className={styles.header}>
             <Row gutter={24}>
-              {/* <Col span={6}>
-                <Button type="primary" onClick={this.openModal.bind(this, {})}>
-                  添加学生
-                </Button>
-              </Col> */}
-              {/* <Col span={6}>
-                <Upload>
-                  <Button>
-                    <Icon type="upload" />
-                    导入学生Excel
-                  </Button>
-                </Upload>
-              </Col> */}
               <Col span={8}>
                 <Input placeholder="输入学号搜索" />
               </Col>
@@ -263,7 +247,7 @@ export default class CourseDetail extends Component {
                 </Button>
               </Col>
             </Row>
-          </div>
+          </div> */}
           <Table
             columns={columns}
             pagination={pagination}
@@ -271,13 +255,6 @@ export default class CourseDetail extends Component {
             rowKey={record => record.number}
           />
         </Card>
-        <EditCourseDetail
-          ref={this.modalForm}
-          handleOk={this.handleOk}
-          handleCancel={this.handleCancel}
-          visible={this.state.visible}
-          current={this.state.current}
-        />
       </PageHeaderWrapper>
     );
   }

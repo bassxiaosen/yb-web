@@ -25,6 +25,7 @@ import {
   Radio,
   Table,
   Popconfirm,
+  Upload
 } from 'antd';
 import styles from './styles.less';
 import EditCourse from './EditCourse';
@@ -42,15 +43,19 @@ class CourseManage extends React.Component {
           id: '111',
           courseName: 'C语言',
           academy: '医学信息工程学院',
-          time: [1553074094894, 1553074122679],
-          teacher: '某教师',
+          teacher: '张三',
+          className: '15医工计算机4',
+          courseTime: '2015上',
+          stuTotal: '88'
         },
         {
           id: '222',
           courseName: '中医药概论',
-          academy: '基础医学院',
-          time: [1553074129747, 1553074134422],
-          teacher: ['某某教师', '某教师'],
+          academy: '中药学院',
+          teacher: '李四',
+          className: '15中药药剂学4',
+          courseTime: '2015下',
+          stuTotal: '99'
         },
       ],
       visible: false,
@@ -103,28 +108,33 @@ class CourseManage extends React.Component {
           <Link to={`courseManage/courseDetail/${record.id}`}>{record.courseName}</Link>
         ),
       },
-      { title: '学院', dataIndex: 'academy', key: 'academy' },
-      {
-        title: '开课时间',
-        dataIndex: 'time',
-        key: 'number',
-        render: (text, record) => {
-          const { start, end } = record.time;
-          return (
-            <span>
-              {moment(start).format('YYYY/MM/DD')} - {moment(end).format('YYYY/MM/DD')}
-            </span>
-          );
-        },
-      },
-      {
-        title: '教师',
-        dataIndex: 'teacher',
-        key: 'course',
-        render: (text, record) => (
-          <span>{Array.isArray(record.teacher) ? record.teacher.join('，') : record.teacher}</span>
-        ),
-      },
+      { title: '课程所属学院', dataIndex: 'academy', key: 'academy' },
+      { title: '上课班级', dataIndex: 'className', key: 'className' },
+      { title: '任教老师', dataIndex: 'teacher', key: 'teacher' },
+      { title: '课程时间', dataIndex: 'courseTime', key: 'courseTime' },
+      { title: '课程人数', dataIndex: 'stuTotal', key: 'stuTotal' },
+      // { title: '上课人数', dataIndex: 'renshu', key: 'renshu' },
+      // {
+      //   title: '开课时间',
+      //   dataIndex: 'time',
+      //   key: 'number',
+      //   render: (text, record) => {
+      //     const { start, end } = record.time;
+      //     return (
+      //       <span>
+      //         {moment(start).format('YYYY/MM/DD')} - {moment(end).format('YYYY/MM/DD')}
+      //       </span>
+      //     );
+      //   },
+      // },
+      // {
+      //   title: '教师',
+      //   dataIndex: 'teacher',
+      //   key: 'course',
+      //   render: (text, record) => (
+      //     <span>{Array.isArray(record.teacher) ? record.teacher.join('，') : record.teacher}</span>
+      //   ),
+      // },
       {
         title: '操作',
         key: 'operation',
@@ -161,11 +171,18 @@ class CourseManage extends React.Component {
                   添加课程
                 </Button>
               </Col>
-              <Col span={8} offset={2}>
+              <Col span={4}>
+                <Upload>
+                  <Button>
+                    <Icon type="upload" /> 批量导入
+                  </Button>
+                </Upload>
+              </Col>
+              <Col span={8}>
                 <Input placeholder="输入课程名称进行查询" allowClear />
               </Col>
-              <Col span={8} offset={2}>
-                <Input placeholder="输入教师姓名进行查询" allowClear />
+              <Col span={8}>
+                <Input placeholder="输入课程时间进行查询" allowClear />
               </Col>
             </Row>
             <Row gutter={24}>
@@ -174,13 +191,19 @@ class CourseManage extends React.Component {
                   搜索
                 </Button>
               </Col>
-              <Col span={8} offset={2}>
+              <Col span={6}>
+                <Input placeholder="输入上课班级查询" allowClear />
+              </Col>
+              <Col span={6}>
                 <Select style={{ width: '100%' }} allowClear placeholder="选择学院">
                   <Option value="123asf">医工</Option>
                 </Select>
               </Col>
-              <Col span={8} offset={2}>
-                <RangePicker />
+              <Col span={4}>
+                <Input placeholder="输入教师工号" allowClear />
+              </Col>
+              <Col span={4}>
+                <Input placeholder="输入教师名称" allowClear />
               </Col>
             </Row>
           </div>

@@ -23,6 +23,7 @@ import {
   Radio,
   Table,
   Popconfirm,
+  Upload
 } from 'antd';
 import styles from './TeacherManage.less';
 import EditTeacher from './EditTeacher';
@@ -84,10 +85,18 @@ class TeacherManage extends React.Component {
   render() {
     const { data, currentPage } = this.state;
     const columns = [
-      { title: '姓名', dataIndex: 'name', key: 'name' },
-      { title: '学院', dataIndex: 'academy', key: 'academy' },
-      { title: '工号', dataIndex: 'jobNumber', key: 'number' },
-      { title: '负责课程', dataIndex: 'course', key: 'course' },
+      { title: '教师工号', dataIndex: 'jobNumber', key: 'number' },
+      { title: '教师姓名', dataIndex: 'name', key: 'name' },
+      { title: '教师所属学院', dataIndex: 'academy', key: 'academy' },
+      {
+        title: '教师任教课程',
+        key: 'course',
+        render: (text, record, index) => (
+          <span>
+            <a>查看课程</a>
+          </span>
+        )
+      },
       {
         title: '操作',
         key: 'operation',
@@ -124,7 +133,14 @@ class TeacherManage extends React.Component {
                   添加教师
                 </Button>
               </Col>
-              <Col span={8} offset={2}>
+              <Col span={4}>
+                <Upload>
+                  <Button>
+                    <Icon type="upload" /> 批量导入
+                  </Button>
+                </Upload>
+              </Col>
+              <Col span={6}>
                 <Input enterButton placeholder="输入姓名进行查询" />
               </Col>
               <Col span={8} offset={2}>
@@ -137,14 +153,14 @@ class TeacherManage extends React.Component {
                   搜索
                 </Button>
               </Col>
-              <Col span={8} offset={2}>
+              <Col span={10}>
                 <Select style={{ width: '100%' }} allowClear placeholder="选择学院">
                   <Option value="123asf">医工</Option>
                 </Select>
               </Col>
-              <Col span={8} offset={2}>
+              {/* <Col span={8} offset={2}>
                 <Input enterButton placeholder="输入课程名称进行查询" />
-              </Col>
+              </Col> */}
             </Row>
           </div>
 

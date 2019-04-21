@@ -40,11 +40,14 @@ class EditTeacher extends React.Component {
         afterClose={() => resetFields()}
       >
         <Form>
-          <FormItem label="姓名">
-            {getFieldDecorator('name', { rules: [{ required: true }] })(<Input />)}
+          <FormItem label="教师工号">
+            {getFieldDecorator('jobNumber', { rules: [{ required: true, message: '请输入正确的工号' }] })(<Input />)}
           </FormItem>
-          <FormItem label="学院">
-            {getFieldDecorator('academy', { rules: [{ required: true }] })(
+          <FormItem label="教师姓名">
+            {getFieldDecorator('name', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
+          </FormItem>
+          <FormItem label="教师学院">
+            {getFieldDecorator('academy', { rules: [{ required: true, message: '请选择学院' }] })(
               <Select>
                 {academy.map((item, index) => {
                   return (
@@ -56,11 +59,8 @@ class EditTeacher extends React.Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="工号">
-            {getFieldDecorator('jobNumber', { rules: [{ required: true }] })(<Input />)}
-          </FormItem>
-          <FormItem label="初始密码">
-            {getFieldDecorator('password', { rules: [{ required: true }] })(
+          <FormItem label="教师密码">
+            {getFieldDecorator('password', { rules: [{ required: true, message: '请输入密码' }] })(
               <Input type="password" />
             )}
           </FormItem>

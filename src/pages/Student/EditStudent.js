@@ -25,6 +25,8 @@ class EditStudent extends React.Component {
       visible,
       handleCancel,
       form: { getFieldDecorator, resetFields },
+      academyArr,
+      classArr
     } = this.props;
     const academy = [
       { id: '1', name: '医学信息工程学院', value: '医工' },
@@ -41,17 +43,20 @@ class EditStudent extends React.Component {
       >
         <Form>
           <FormItem label="学生学号">
-            {getFieldDecorator('studentId', { rules: [{ required: true, message: '请输入学号' }] })(<Input />)}
+            {getFieldDecorator('studentNum', { rules: [{ required: true, message: '请输入学号' }] })(<Input />)}
           </FormItem>
           <FormItem label="学生姓名">
-            {getFieldDecorator('name', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
+            {getFieldDecorator('trueName', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
           </FormItem>
           <FormItem label="学院">
-            {getFieldDecorator('academy', { rules: [{ required: true, message: '请选择学院' }] })(
-              <Select>
-                {academy.map((item, index) => {
+            {getFieldDecorator('academyId', { rules: [{ required: true, message: '请选择学院' }] })(
+              <Select
+                showSearch
+                optionFilterProp="children"
+              >
+                {academyArr.map((item, index) => {
                   return (
-                    <Option key={index} value={item.value}>
+                    <Option key={item.academyId} value={item.academyId}>
                       {item.name}
                     </Option>
                   );
@@ -60,12 +65,14 @@ class EditStudent extends React.Component {
             )}
           </FormItem>
           <FormItem label="班级">
-            {getFieldDecorator('speciality', { rules: [{ required: true, message: '请输入班级' }] })(
-              <Select>
-                {academy.map((item, index) => {
+            {getFieldDecorator('classId', { rules: [{ required: true, message: '请选择班级' }] })(
+              <Select showSearch
+                optionFilterProp="children"
+              >
+                {classArr.map((item, index) => {
                   return (
-                    <Option key={index} value={item.value}>
-                      {item.name}
+                    <Option key={item.classId} value={item.classId}>
+                      {item.className}
                     </Option>
                   );
                 })}
@@ -73,7 +80,9 @@ class EditStudent extends React.Component {
             )}
           </FormItem>
           <FormItem label="学生密码">
-            {getFieldDecorator('password', { rules: [{ required: true, message: '请输入密码' }] })(<Input />)}
+            {getFieldDecorator('password'
+              // , { rules: [{ required: true, message: '请输入密码' }] }
+            )(<Input />)}
           </FormItem>
         </Form>
       </Modal>

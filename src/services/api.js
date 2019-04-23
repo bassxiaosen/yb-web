@@ -110,6 +110,14 @@ export async function fakeAccountLogin(params) {
   });
 }
 
+export async function login(params) {
+  return request('http://119.29.121.40:8001/login', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+
 export async function fakeRegister(params) {
   return request('/api/register', {
     method: 'POST',

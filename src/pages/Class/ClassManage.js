@@ -3,6 +3,9 @@ import {Table, Modal, message, Button, Input, Select, Row, Col, Card, Upload, Ic
 import styles from './styles.less';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import EditClass from './EditClass';
+import qs from 'qs'
+import request from "@/utils/request"
+import url from "@/utils/url"
 
 const Option = Select.Option;
 
@@ -10,16 +13,75 @@ class ClassManage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: true,
       visible: false,
-      data: [{
-        className: '15医工计算机4',
-      }, {
-        className: '15医工医工4'
-      }],
+      data: [],
       current: {},
       currentPage: 1,
+      total: 0,
+      // 查询数据
+      name: '', // 班级名用于查询
+      sortByName: 0,
     };
     this.modalForm = React.createRef();
+  }
+
+  async componentDidMount() {
+    await this.getClassData()
+  }
+
+  getClassData = () => {
+    const { name, currentPage, sortByName } = this.state
+    return request(`${url}/class/search/${currentPage}/10`, {
+      method: 'POST',
+      body: {
+        name, sortByName
+      }
+    }).then((response) => {
+      const { data } = response
+      const { content, size, totalElements } = data
+      this.setState({
+        data: content,
+        loading: false,
+        total: totalElements
+      })
+    }).catch((err) => {
+      message.error(err)
+    })
+  }
+
+  postClassData = (obj) => {
+    this.setState({
+      loading: true
+    })
+    return request(`${url}/class`, {
+      method: 'POST',
+      body: obj
+    }).then((data) => {
+      if (this.state.current.classId) {
+        this.setState({loading: false})
+        message.success('修改成功')
+      } else {
+        message.success('添加成功')
+      }
+    }).catch((err) => {
+      console.log(err)
+      // message.error(err)
+    })
+  }
+
+  deleteClassData = (classId) => {
+    this.setState({
+      loading: true
+    })
+    return request(`${url}/class/${classId}`,{ method: 'DELETE' })
+      .then((response) => {
+        this.setState({loading: false})
+        message.success('删除成功')
+      }).catch((err) => {
+        console.log(err)
+        // message.error(err)
+      })
   }
 
   handleCancel = () => {
@@ -32,24 +94,40 @@ class ClassManage extends React.Component {
     this.setState({ current: record, visible: true });
   };
 
-  handleOk = value => {
-    console.log(value);
+  handleOk = async value => {
+    await this.postClassData(value)
+    await this.getClassData()
   };
 
-  onClickDelete = id => {
-    message.success(`删除学生id：${id}`);
+  onClickDelete = async id => {
+    console.log(id)
+    await this.deleteClassData(id)
+    await this.getClassData()
   };
+
+  handleChangeSearch = (key, event) => {
+    if (key === 'academyId') {
+      this.setState({
+        [key]: event
+      })
+    } else {
+      this.setState({
+        [key]: event.target.value
+      })
+    }
+  }
 
   handleSearch = () => {
+    this.getClassData()
     console.log('搜索');
   };
 
   render() {
-    const { data, currentPage } = this.state;
+    const { data, currentPage, total, loading } = this.state;
     const columns = [
-      { title: '班级名称', dataIndex: 'className', key: 'className' },
-      { title: '班级课程', key: 'classCourses', render: () => ( <a>查看课程</a> ) },
-      { title: '班级学生', key: 'classStudents', render: () => ( <a>查看学生</a> ) },
+      { title: '班级名称', dataIndex: 'name', key: 'name' },
+      // { title: '班级课程', key: 'classCourses', render: () => ( <a>查看课程</a> ) },
+      // { title: '班级学生', key: 'classStudents', render: () => ( <a>查看学生</a> ) },
       {
         title: '操作',
         key: 'operation',
@@ -70,9 +148,11 @@ class ClassManage extends React.Component {
     const pagination = {
       current: currentPage,
       pageSize: 10,
-      total: 100,
+      total,
       onChange: page => {
-        this.setState({ currentPage: page });
+        this.setState({ currentPage: page }, () => {
+          this.getClassData()
+        });
       },
     };
 
@@ -82,28 +162,28 @@ class ClassManage extends React.Component {
           <div className={styles.header}>
             <Row style={{ marginBottom: '16px' }} gutter={24}>
               <Col span={6}>
-                <Button type="primary" onClick={this.openModal.bind(this, {})}>
+                <Button disabled={loading} type="primary" onClick={this.openModal.bind(this, {})}>
                   添加班级
                 </Button>
               </Col>
               <Col span={6}>
-                <Upload>
-                  <Button>
+                <Upload disabled={loading}>
+                  <Button disabled={loading}>
                     <Icon type="upload" /> 批量导入
                   </Button>
                 </Upload>
               </Col>
               <Col span={6}>
-                <Input enterButton placeholder="输入班级名称查询" />
+                <Input disabled={loading} onChange={this.handleChangeSearch.bind(this, 'name')} allowClear placeholder="输入班级名称查询" />
               </Col>
               <Col span={6}>
-                <Button type="primary" onClick={this.handleSearch}>
+                <Button disabled={loading} type="primary" onClick={this.handleSearch}>
                   搜索
                 </Button>
               </Col>
             </Row>
           </div>
-          <Table rowKey={record => record.studentId} dataSource={data} columns={columns} pagination={pagination}/>
+          <Table loading={loading} rowKey={record => record.classId} dataSource={data} columns={columns} pagination={pagination}/>
         </Card>
         <EditClass
           ref={this.modalForm}

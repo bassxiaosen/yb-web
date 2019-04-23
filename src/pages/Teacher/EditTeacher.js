@@ -25,11 +25,8 @@ class EditTeacher extends React.Component {
       visible,
       handleCancel,
       form: { getFieldDecorator, resetFields },
+      academyArr
     } = this.props;
-    const academy = [
-      { id: '1', name: '医学信息工程学院', value: '医工' },
-      { id: '2', name: '中医药学院', value: '中医药' },
-    ];
 
     return (
       <Modal
@@ -41,17 +38,20 @@ class EditTeacher extends React.Component {
       >
         <Form>
           <FormItem label="教师工号">
-            {getFieldDecorator('jobNumber', { rules: [{ required: true, message: '请输入正确的工号' }] })(<Input />)}
+            {getFieldDecorator('teacherNum', { rules: [{ required: true, message: '请输入工号' }] })(<Input />)}
           </FormItem>
           <FormItem label="教师姓名">
-            {getFieldDecorator('name', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
+            {getFieldDecorator('truename', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
           </FormItem>
           <FormItem label="教师学院">
-            {getFieldDecorator('academy', { rules: [{ required: true, message: '请选择学院' }] })(
-              <Select>
-                {academy.map((item, index) => {
+            {getFieldDecorator('academyId', { rules: [{ required: true, message: '请选择学院' }] })(
+              <Select
+                showSearch
+                optionFilterProp="children"
+              >
+                {academyArr.map((item, index) => {
                   return (
-                    <Option key={index} value={item.value}>
+                    <Option key={item.academyId} value={item.academyId}>
                       {item.name}
                     </Option>
                   );
@@ -60,7 +60,9 @@ class EditTeacher extends React.Component {
             )}
           </FormItem>
           <FormItem label="教师密码">
-            {getFieldDecorator('password', { rules: [{ required: true, message: '请输入密码' }] })(
+            {getFieldDecorator('password'
+            // , { rules: [{ required: true, message: '请输入密码' }] }
+            )(
               <Input type="password" />
             )}
           </FormItem>

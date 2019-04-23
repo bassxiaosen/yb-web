@@ -27,6 +27,7 @@ import {
 import NumberInfo from '@/components/NumberInfo';
 import numeral from 'numeral';
 import moment from 'moment';
+import request from '@/utils/request'
 
 const visitData = [];
 const beginDay = new Date().getTime();
@@ -53,6 +54,13 @@ export default class AdminAnalysis extends Component {
         }
       ]
     };
+  }
+
+
+  componentDidMount() {
+    request('http://119.29.121.40:8081/academy/search/1/3', {
+      method: 'POST',
+    })
   }
 
   render() {

@@ -32,6 +32,9 @@ class EditCourse extends React.Component {
       visible,
       handleCancel,
       form: { getFieldDecorator, resetFields },
+      academyArr,
+      classArr,
+      teacherArr
     } = this.props;
     const academy = [
       { id: '1', name: '医学信息工程学院', value: '医工' },
@@ -48,14 +51,17 @@ class EditCourse extends React.Component {
       >
         <Form>
           <FormItem label="课程名称">
-            {getFieldDecorator('courseName', { rules: [{ required: true, message: '请输入课程名称' }] })(<Input />)}
+            {getFieldDecorator('name', { rules: [{ required: true, message: '请输入课程名称' }] })(<Input />)}
           </FormItem>
           <FormItem label="课程所属学院">
-            {getFieldDecorator('academy', { rules: [{ required: true, message: '请选择学院' }] })(
-              <Select>
-                {academy.map((item, index) => {
+            {getFieldDecorator('academyId', { rules: [{ required: true, message: '请选择学院' }] })(
+              <Select
+                showSearch
+                optionFilterProp="children"
+              >
+                {academyArr.map((item, index) => {
                   return (
-                    <Option key={index} value={item.value}>
+                    <Option key={item.academyId} value={item.academyId}>
                       {item.name}
                     </Option>
                   );
@@ -64,11 +70,14 @@ class EditCourse extends React.Component {
             )}
           </FormItem>
           <FormItem label="上课班级">
-            {getFieldDecorator('banji', { rules: [{ required: true, message: "请输入上课班级"}] })(
-              <Select>
-                {academy.map((item, index) => {
+            {getFieldDecorator('classId', { rules: [{ required: true, message: "请输入上课班级"}] })(
+              <Select
+                showSearch
+                optionFilterProp="children"
+              >
+                {classArr.map((item, index) => {
                   return (
-                    <Option key={index} value={item.value}>
+                    <Option key={item.classId} value={item.classId}>
                       {item.name}
                     </Option>
                   );
@@ -76,13 +85,16 @@ class EditCourse extends React.Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="任教老师工号">
-            {getFieldDecorator('teacherNum', { rules: [{ required: true, message: "请输入任教老师工号"}] })(
-              <Select>
-                {academy.map((item, index) => {
+          <FormItem label="任教老师">
+            {getFieldDecorator('teacherId', { rules: [{ required: true, message: "请输入任教老师工号"}] })(
+              <Select
+                showSearch
+                optionFilterProp="children"
+              >
+                {teacherArr.map((item, index) => {
                   return (
-                    <Option key={index} value={item.value}>
-                      {item.name}
+                    <Option key={item.teacherId} value={item.teacherId}>
+                      {item.truename}
                     </Option>
                   );
                 })}
@@ -90,14 +102,14 @@ class EditCourse extends React.Component {
             )}
           </FormItem>
           <FormItem label="课程时间">
-            {getFieldDecorator('courseTime', { rules: [{ required: true, message: '请选择课程时间' }] })(
+            {getFieldDecorator('giveDate', { rules: [{ required: true, message: '请选择课程时间' }] })(
               <Select>
-                <Option key="001">2019上</Option>
-                <Option key="002">2019下</Option>
-                <Option key="003">2020上</Option>
-                <Option key="004">2020下</Option>
-                <Option key="005">2021上</Option>
-                <Option key="006">2021下</Option>
+                <Option key="2019上">2019上</Option>
+                <Option key="2019下">2019下</Option>
+                <Option key="2020上">2020上</Option>
+                <Option key="2020下">2020下</Option>
+                <Option key="2021上">2021上</Option>
+                <Option key="2021下">2021下</Option>
               </Select>
             )}
           </FormItem>

@@ -48,7 +48,7 @@ class EditTeacher extends React.Component {
           <FormItem label="班级名称">
             {getFieldDecorator('className', { rules: [{ required: true, message: '请输入班级名称' }] })(<Input />)}
           </FormItem>
-          <FormItem label="班级所属学院">
+          {/* <FormItem label="班级所属学院">
             {getFieldDecorator('academy', { rules: [{ required: true, message: '请选择学院' }] })(
               <Select>
                 {academy.map((item, index) => {
@@ -60,7 +60,7 @@ class EditTeacher extends React.Component {
                 })}
               </Select>
             )}
-          </FormItem>
+          </FormItem> */}
           {/* <FormItem label="导入学生信息">
             {
               getFieldDecorator('sutentInfo',

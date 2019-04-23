@@ -17,6 +17,9 @@ import {
 import styles from './StudentManage.less';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import EditStudent from './EditStudent';
+import qs from 'qs'
+import request from "@/utils/request"
+import url from "@/utils/url"
 
 const Search = Input.Search;
 const Option = Select.Option;
@@ -25,20 +28,114 @@ class StudentManage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: true,
       visible: false,
-      data: [
-        {
-          name: '蔡宇森',
-          studentId: '2015081004',
-          academy: '医学信息工程学院',
-          entryYear: '2015',
-          speciality: '计算机科学与技术',
-        },
-      ],
+      data: [],
       current: {},
       currentPage: 1,
+      total: 0,
+      academyArr: [], // 学院下拉框
+      classArr: [], // 班级下拉框
+      // 查询数据
+      studentNum: '', // 学号
+      truename: '', // 真实姓名
+      academyId: '', // 学院id
+      className: '', // 班级名称
+      sortByStudentNum: 0,
     };
     this.modalForm = React.createRef();
+  }
+
+  async componentDidMount() {
+    await this.getAcademyData()
+    // await this.getClassData()
+    await this.getStudentData()
+  }
+
+  getStudentData = () => {
+    this.setState({
+      loading: true
+    })
+    const { studentNum, truename, academyId, className, currentPage, sortByStudentNum } = this.state
+    return request(`${url}/student/search/${currentPage}/10`, {
+      method: 'POST',
+      body: {
+        studentNum, academyId, truename, className, sortByStudentNum
+      }
+    }).then((response) => {
+      const { data } = response
+      const { content, size, totalElements } = data
+      this.setState({
+        data: content,
+        loading: false,
+        total: totalElements
+      })
+    }).catch((err) => {
+      message.error(err)
+    })
+  }
+
+  getAcademyData = () => {
+    return request(`${url}/academy/search/1/10000`, {
+      method: 'POST'
+    }).then(response => {
+      const { data: { content } } = response
+      this.setState({
+        academyArr: content,
+      })
+    }).catch(e => {
+      message.error(e)
+    })
+  }
+
+  getClassData = () => {
+    return request(`${url}/class/search/1/10000`, {
+      method: 'POST',
+      body: {
+        sortByName: 0
+      }
+    }).then(response => {
+      const { data: { content } } = response
+      this.setState({
+        classArr: content,
+      })
+    }).catch(e => {
+      message.error(e)
+    })
+  }
+
+  postStudentData = (obj) => {
+    this.setState({
+      loading: true
+    })
+    return request(`${url}/student`, {
+      method: 'POST',
+      body: obj
+    }).then((data) => {
+      if (this.state.current.studentId) {
+        this.setState({loading: false})
+        message.success('修改成功')
+      } else {
+        message.success('添加成功')
+      }
+    }).catch((err) => {
+      console.log(err)
+      // message.error(err)
+    })
+  }
+
+  deleteStudentData = (studentId) => {
+    this.setState({
+      loading: true
+    })
+    return request(`${url}/student/${studentId}`,{ method: 'DELETE' })
+      .then((response) => {
+        this.setState({loading: false})
+        message.success('删除成功')
+      }).catch((err) => {
+        console.log(err)
+        // message.error(err)
+      })
   }
 
   handleCancel = () => {
@@ -51,25 +148,39 @@ class StudentManage extends React.Component {
     this.setState({ current: record, visible: true });
   };
 
-  handleOk = value => {
-    console.log(value);
+  handleOk = async value => {
+    await this.postStudentData(value)
+    await this.getStudentData()
   };
 
-  onClickDelete = id => {
-    message.success(`删除学生id：${id}`);
+  onClickDelete = async id => {
+    await this.deleteStudentData(id)
+    await this.getStudentData()
   };
+
+  handleChangeSearch = (key, event) => {
+    if (key === 'academyId') {
+      this.setState({
+        [key]: event
+      })
+    } else {
+      this.setState({
+        [key]: event.target.value
+      })
+    }
+  }
 
   handleSearch = () => {
-    console.log('搜索');
+    this.getStudentData()
   };
 
   render() {
-    const { data, currentPage } = this.state;
+    const { data, currentPage, total, loading, academyArr, classArr } = this.state;
     const columns = [
-      { title: '学生学号', dataIndex: 'studentId', key: 'studentId' },
-      { title: '学生姓名', dataIndex: 'name', key: 'name' },
+      { title: '学生学号', dataIndex: 'studentNum', key: 'studentNum' },
+      { title: '学生姓名', dataIndex: 'truename', key: 'truename' },
       { title: '学生所属学院', dataIndex: 'academy', key: 'academy' },
-      { title: '学生班级', dataIndex: 'speciality', key: 'speciality' },
+      { title: '学生班级', dataIndex: 'className', key: 'className' },
       {
         title: '操作',
         key: 'operation',
@@ -90,9 +201,11 @@ class StudentManage extends React.Component {
     const pagination = {
       current: currentPage,
       pageSize: 10,
-      total: 100,
+      total,
       onChange: page => {
-        this.setState({ currentPage: page });
+        this.setState({ currentPage: page }, () => {
+          this.getStudentData()
+        });
       },
     };
 
@@ -102,39 +215,45 @@ class StudentManage extends React.Component {
           <div className={styles.header}>
             <Row style={{ marginBottom: '16px' }} gutter={24}>
               <Col span={4}>
-                <Button type="primary" onClick={this.openModal.bind(this, {})}>
+                <Button type="primary" disabled={loading} onClick={this.openModal.bind(this, {})}>
                   添加学生
                 </Button>
               </Col>
               <Col span={4}>
-                <Upload>
-                  <Button>
+                <Upload disabled={loading}>
+                  <Button disabled={loading}>
                     <Icon type="upload" /> 批量导入
                   </Button>
                 </Upload>
               </Col>
               <Col span={6}>
-                <Input enterButton placeholder="输入姓名进行查询" />
+                <Input allowClear onChange={this.handleChangeSearch.bind(this, 'truename')} disabled={loading} placeholder="输入姓名进行查询" />
               </Col>
               <Col span={8} offset={2}>
-                <Input placeholder="请输入学号进行查询"/>
+                <Input allowClear onChange={this.handleChangeSearch.bind(this, 'studentNum')} disabled={loading} placeholder="请输入学号进行查询"/>
               </Col>
             </Row>
             <Row gutter={24}>
               <Col span={4}>
-                <Button type="primary" onClick={this.handleSearch}>搜索</Button>
+                <Button disabled={loading} type="primary" onClick={this.handleSearch}>搜索</Button>
               </Col>
               <Col span={10}>
-                <Input placeholder="请输入学生班级进行查询"/>
+                <Input allowClear onChange={this.handleChangeSearch.bind(this, 'className')} disabled={loading} placeholder="请输入学生班级进行查询"/>
               </Col>
               <Col span={8} offset={2}>
-                <Select style={{ width: '100%' }} placeholder="选择学院">
-                  <Option value="1">医学信息工程学院</Option>
+                <Select allowClear onChange={this.handleChangeSearch.bind(this, 'academyId')} style={{ width: '100%' }} disabled={loading} placeholder="选择学院">
+                  {academyArr.map((item, index) => {
+                    return (
+                      <Option key={item.academyId} value={item.academyId}>
+                        {item.name}
+                      </Option>
+                    );
+                  })}
                 </Select>
               </Col>
             </Row>
           </div>
-          <Table rowKey={record => record.studentId} dataSource={data} columns={columns} pagination={pagination}/>
+          <Table loading={loading} rowKey={record => record.studentId} dataSource={data} columns={columns} pagination={pagination}/>
         </Card>
         <EditStudent
           ref={this.modalForm}
@@ -142,6 +261,8 @@ class StudentManage extends React.Component {
           handleCancel={this.handleCancel}
           visible={this.state.visible}
           current={this.state.current}
+          academyArr={this.state.academyArr}
+          classArr={this.state.classArr}
         />
       </PageHeaderWrapper>
     );

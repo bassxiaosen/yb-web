@@ -79,41 +79,33 @@ export default class CourseDetail extends Component {
     const { match } = this.props;
     const dataV = [
       {
-        year: "1991",
-        value: 3
+        year: "2019-4-15",
+        value: 85
       },
       {
-        year: "1992",
-        value: 4
+        year: "2019-4-16",
+        value: 90
       },
       {
-        year: "1993",
-        value: 3.5
+        year: "2019-4-17",
+        value: 95
       },
       {
-        year: "1994",
-        value: 5
+        year: "2019-4-18",
+        value: 90
       },
       {
-        year: "1995",
-        value: 4.9
+        year: "2019-4-19",
+        value: 90
       },
       {
-        year: "1996",
-        value: 6
+        year: "2019-4-20",
+        value: 85
       },
       {
-        year: "1997",
-        value: 7
+        year: "2019-4-21",
+        value: 80
       },
-      {
-        year: "1998",
-        value: 9
-      },
-      {
-        year: "1999",
-        value: 13
-      }
     ];
     const cols = {
       value: {

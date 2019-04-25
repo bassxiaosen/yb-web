@@ -32,7 +32,10 @@ import {
   Facet,
   Util
 } from "bizcharts";
-
+import { log } from 'util';
+import qs from 'qs'
+import request from "@/utils/request"
+import url from "@/utils/url"
 
 const Search = Input.Search;
 export default class CourseDetail extends Component {
@@ -41,17 +44,98 @@ export default class CourseDetail extends Component {
     this.state = {
       data: [
         {
-          id: '2015081004',
-          name: '蔡宇森',
-          number: '2015081004',
-          academy: '医学信息工程学院',
+          studentId: '2015081004',
+          studentTruename: '蔡宇森',
+          studentNum: '2015081004',
+          attendanceRateOfStudent: '99%'
         },
       ],
       visible: false,
       current: {},
-      currentPage: 2,
+      currentPage: 1,
+      total: 0,
+      studentNum: '',
+      truename: '',
+      loading: true,
+      courseDetailData: {
+        name: 'C语言程序设计',
+        teacherTruename: '张三',
+        giveDate: '2015上',
+        academyName: '医学信息工程学院',
+        studentCount: 85,
+        className: '15医工计算机4'
+      },
+      courseAttendanceData: {
+        totalAttendanceNum: 10,
+        totalAttendanceRate: 98.75,
+      }
     };
     this.modalForm = React.createRef();
+  }
+
+  async componentDidMount() {
+    const { courseId } = this.props.match.params // 获取到courseId
+    console.log(courseId)
+    // await this.getCourseDetailData()
+    // await this.getCourseAttendanceData()
+    // await this.getCourseStudent()
+  }
+
+  getCourseDetailData = () => {
+    const { courseId } = this.props.match.params
+    return request(`${url}/course/${courseId}`, { method: 'GET' })
+    .then((response) => {
+      const { data: { content } } = response
+      this.setState({
+        courseDetailData: content
+      })
+    })
+    .catch((err) => {
+      message.error('获取课程详情数据失败')
+      console.log('err', err)
+    })
+  }
+
+  getCourseAttendanceData = () => {
+    const { courseId } = this.props.match.params
+    return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'GET' })
+    .then((response) => {
+      const { data: { content } } = response
+      this.setState({
+        courseAttendanceData: content
+      })
+    })
+    .catch((err) => {
+      message.error('获取考勤数据失败')
+      console.log('err', err)
+    })
+  }
+
+  getCourseStudent = () => {
+    this.setState({
+      loading: true,
+    })
+    const { courseId } = this.props.match.params
+    const { studentNum, currentPage, truename, sortField, direction } = this.state
+    return request(`${url}/attendance/queryAttendanceRateOfStudents/${currentPage}/10`,
+    {
+      method: 'POST',
+      body: {
+        studentNum, truename, sortField, direction,
+        courseId
+      }
+    })
+    .then((response) => {
+      const { data: { content } } = response
+      this.setState({
+        data: content,
+        loading: false,
+      })
+    })
+    .catch((err) => {
+      message.error('获取学生数据失败')
+      console.log('err', err)
+    })
   }
 
   handleCancel = () => {
@@ -72,66 +156,121 @@ export default class CourseDetail extends Component {
     message.success(`删除学生id：${id}`);
   };
 
+  handleChangeSearch = (key, event) => {
+    if (key === 'academyId') {
+      this.setState({
+        [key]: event
+      })
+    } else {
+      this.setState({
+        [key]: event.target.value
+      })
+    }
+  }
+
   handleSearch = () => {
-    console.log('搜索');
+    this.getCourseStudent()
   };
 
   render() {
-    const { data, currentPage } = this.state;
+    const {
+      data,
+      currentPage,
+      total,
+      loading,
+      courseDetailData: {
+        name, teacherTruename, className,  giveDate, studentCount, academyName
+      },
+      courseAttendanceData: {
+        totalAttendanceNum, totalAttendanceRate
+      }
+    } = this.state;
     const { match } = this.props;
     const dataV = [
       {
-        year: "2019-4-15",
+        date: "2019-4-15",
         value: 85
       },
       {
-        year: "2019-4-16",
+        date: "2019-4-16",
         value: 90
       },
       {
-        year: "2019-4-17",
+        date: "2019-4-17",
         value: 95
       },
       {
-        year: "2019-4-18",
+        date: "2019-4-18",
         value: 90
       },
       {
-        year: "2019-4-19",
+        date: "2019-4-19",
         value: 90
       },
       {
-        year: "2019-4-20",
+        date: "2019-4-20",
         value: 85
       },
       {
-        year: "2019-4-21",
+        date: "2019-4-21",
         value: 80
+      },
+      {
+        date: "2019-4-22",
+        value: 85
+      },
+      {
+        date: "2019-4-24",
+        value: 85
+      },
+      {
+        date: "2019-4-25",
+        value: 85
+      },
+      {
+        date: "2019-4-26",
+        value: 85
+      },
+      {
+        date: "2019-4-27",
+        value: 85
+      },
+      {
+        date: "2019-4-28",
+        value: 85
+      },
+      {
+        date: "2019-4-29",
+        value: 85
+      },
+      {
+        date: "2019-4-30",
+        value: 85
       },
     ];
     const cols = {
       value: {
-        min: 0
+        alias: '出勤率'
       },
-      year: {
-        range: [0, 1]
+      date: {
+        alias: '日期时间'
       }
     };
     const columns = [
       {
-        dataIndex: 'number',
-        key: 'number',
+        dataIndex: 'studentNum',
+        key: 'studentNum',
         title: '学生学号',
       },
       {
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'studentTruename',
+        key: 'studentTruename',
         title: '学生姓名',
       },
       {
-        dataIndex: 'academy',
-        key: 'academy',
-        title: '学生所属学院',
+        dataIndex: 'attendanceRateOfStudent',
+        key: 'attendanceRateOfStudent',
+        title: '出勤率',
       },
       // {
       //   dataIndex: 'subject',
@@ -158,9 +297,11 @@ export default class CourseDetail extends Component {
     const pagination = {
       current: currentPage,
       pageSize: 10,
-      total: 100,
+      total,
       onChange: page => {
-        this.setState({ currentPage: page });
+        this.setState({ currentPage: page }, () => {
+          this.getCourseStudent()
+        });
       },
     };
 
@@ -169,18 +310,18 @@ export default class CourseDetail extends Component {
         <Card>
           <div className={styles.header}>
             <Row>
-              <Col span={6}>课程名称：C语言程序设计</Col>
-              <Col span={6}>任课教师：张三</Col>
-              <Col span={6}>开课时间：2015上</Col>
-              <Col span={6}>课程总学生人数：医学信息工程学院</Col>
+              <Col span={6}>课程名称：{name}</Col>
+              <Col span={6}>任课教师：{teacherTruename}</Col>
+              <Col span={6}>开课时间：{giveDate}</Col>
+              <Col span={6}>课程所属学院：{academyName}</Col>
             </Row>
           </div>
           <div className={styles.header}>
             <Row>
-              <Col span={6}>课程总人数：85人</Col>
-              <Col span={6}>上课班级：15医工计算机4</Col>
-              <Col span={6}>总考勤次数：10次</Col>
-              <Col span={6}>课程平均出勤率：90%</Col>
+              <Col span={6}>课程总人数：{studentCount}人</Col>
+              <Col span={6}>上课班级：{className}</Col>
+              <Col span={6}>总考勤次数：{totalAttendanceNum}次</Col>
+              <Col span={6}>课程平均出勤率：{totalAttendanceRate}%</Col>
             </Row>
           </div>
           <div className={styles.header}>
@@ -213,18 +354,18 @@ export default class CourseDetail extends Component {
                   }
                 >
                   <Chart height={400} data={dataV} scale={cols} forceFit>
-                      <Axis name="year" />
+                      <Axis name="date" />
                       <Axis name="value" />
                       <Tooltip
                         crosshairs={{
                           type: "y"
                         }}
                       />
-                      <Geom type="line" position="year*value" size={2} />
+                      <Geom type="line" position="date*value" size={1} />
                       <Geom
                         type="point"
-                        position="year*value"
-                        size={4}
+                        position="date*value"
+                        size={2}
                         shape={"circle"}
                         style={{
                           stroke: "#fff",
@@ -252,13 +393,13 @@ export default class CourseDetail extends Component {
                 </Upload>
               </Col> */}
               <Col span={8}>
-                <Input placeholder="输入学号搜索" />
+                <Input disabled={loading} allowClear onChange={this.handleChangeSearch.bind(this, 'studentNum')} placeholder="输入学号搜索" />
               </Col>
               <Col span={8}>
-                <Input placeholder="输入姓名搜索" />
+                <Input disabled={loading} allowClear onChange={this.handleChangeSearch.bind(this, 'truename')} placeholder="输入姓名搜索" />
               </Col>
               <Col span={8}>
-                <Button type="primary" onClick={this.handleSearch}>
+                <Button disabled={loading} type="primary" onClick={this.handleSearch}>
                   查询
                 </Button>
               </Col>
@@ -268,7 +409,8 @@ export default class CourseDetail extends Component {
             columns={columns}
             pagination={pagination}
             dataSource={data}
-            rowKey={record => record.number}
+            loading={loading}
+            rowKey={record => record.studentId}
           />
         </Card>
         <EditCourseDetail

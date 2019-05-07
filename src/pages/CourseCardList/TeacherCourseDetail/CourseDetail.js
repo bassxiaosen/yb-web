@@ -36,7 +36,6 @@ import { log } from 'util';
 import qs from 'qs'
 import request from "@/utils/request"
 import url from "@/utils/url"
-import { getPassWeek } from "@/utils/gettime"
 
 const Search = Input.Search;
 export default class CourseDetail extends Component {
@@ -80,7 +79,6 @@ export default class CourseDetail extends Component {
   async componentDidMount() {
     const { courseId } = this.props.match.params // 获取到courseId
     console.log(courseId)
-    console.log(getPassWeek())
     await this.getCourseDetailData()
     await this.getCourseAttendanceData()
     await this.getCourseStudent()

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Icon, Table } from 'antd';
+import { Row, Col, Icon, Table, message } from 'antd';
 import {
   ChartCard,
   Field,
@@ -28,20 +28,15 @@ import NumberInfo from '@/components/NumberInfo';
 import numeral from 'numeral';
 import moment from 'moment';
 import request from '@/utils/request'
-
-const visitData = [];
-const beginDay = new Date().getTime();
-for (let i = 0; i < 20; i += 1) {
-  visitData.push({
-    x: moment(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format('YYYY-MM-DD'),
-    y: Math.floor(Math.random() * 100) + 10,
-  });
-}
+import url from "@/utils/url"
+import { getRangeTime, getDayTime } from "@/utils/gettime"
 
 export default class AdminAnalysis extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      totalCount: 0,
+      countVisible: [],
       currentPage: 2,
       tableData: [
         {
@@ -56,15 +51,56 @@ export default class AdminAnalysis extends Component {
     };
   }
 
-
-  componentDidMount() {
-    request('http://119.29.121.40:8081/academy/search/1/3', {
+  getCheckInCount() {
+    const [ startTime, endTime ] = getRangeTime(6)
+    return request(`${url}/attendance/displayAttendanceUsed`, {
       method: 'POST',
+      body: {
+        startTime, endTime
+      }
+    }).then((res) => {
+      const { data } = res
+      this.setState({
+        totalCount: data
+      })
+    }).catch((err) => {
+      console.log(err)
+      message.error('获取考勤次数统计失败')
     })
   }
 
+  async getCheckInCountVisible() {
+    for(let i = 6; i >= 0; i--) {
+      const [ startTime, endTime ] = getDayTime(i)
+      await request(`${url}/attendance/displayAttendanceUsed`, {
+        method: 'POST',
+        body: {
+          startTime, endTime
+        }
+      }).then((res) => {
+        const dateStr = startTime.substr(0, 10)
+        const { countVisible } = this.state
+        // console.log(res)
+        this.setState({
+          countVisible: countVisible.concat({
+            x: dateStr,
+            y: res.data
+          })
+        })
+      }).catch(err => {
+        console.log(err)
+        message.error('获取考勤次数失败')
+      })
+    }
+  }
+
+  async componentDidMount() {
+    this.getCheckInCount()
+    this.getCheckInCountVisible()
+  }
+
   render() {
-    const { tableData, currentPage } = this.state;
+    const { tableData, currentPage, totalCount, countVisible } = this.state;
     const dataV = [
       {
         year: "1991",
@@ -137,18 +173,18 @@ export default class AdminAnalysis extends Component {
           <Col span={24}>
             <ChartCard
               title="教师考勤次数"
-              action={
-                <div>
-                  <a>周</a>/
-                  <a>月</a>/
-                  <a>半年</a>
-                </div>
-              }
-              total={`${numeral(886).format('0,0')}`}
+              // action={
+              //   <div>
+              //     <a>周</a>/
+              //     <a>月</a>/
+              //     <a>半年</a>
+              //   </div>
+              // }
+              total={`${numeral(totalCount).format('0,0')}`}
               // footer={<Field label="日考勤次数" value={numeral(50).format('0,0')} />}
               contentHeight={200}
             >
-              <Bar height={200} data={visitData} />
+              <Bar height={200} data={countVisible} />
             </ChartCard>
           </Col>
         </Row>
@@ -157,13 +193,13 @@ export default class AdminAnalysis extends Component {
             <ChartCard
               title="课程出勤率"
               total={`平均：${90}%`}
-              action={
-                <div>
-                  <a>周</a>/
-                  <a>月</a>/
-                  <a>半年</a>
-                </div>
-              }
+              // action={
+              //   <div>
+              //     <a>周</a>/
+              //     <a>月</a>/
+              //     <a>半年</a>
+              //   </div>
+              // }
             >
               <Chart height={400} data={dataV} scale={cols} forceFit>
                   <Axis name="year" />
@@ -192,13 +228,13 @@ export default class AdminAnalysis extends Component {
           <Col span={24}>
             <ChartCard
               title="课程出勤率排行"
-              action={
-                <div>
-                  <a>周</a>/
-                  <a>月</a>/
-                  <a>半年</a>
-                </div>
-              }
+              // action={
+              //   <div>
+              //     <a>周</a>/
+              //     <a>月</a>/
+              //     <a>半年</a>
+              //   </div>
+              // }
             >
               <Table
                 columns={columns}

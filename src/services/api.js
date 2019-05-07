@@ -1,5 +1,6 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
+import url from "@/utils/url"
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
@@ -111,7 +112,7 @@ export async function fakeAccountLogin(params) {
 }
 
 export async function login(params) {
-  return request('http://119.29.121.40:8001/login', {
+  return request(`${url}/login`, {
     method: 'POST',
     body: params,
   });

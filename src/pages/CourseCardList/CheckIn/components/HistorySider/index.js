@@ -17,12 +17,18 @@ export default class HistorySider extends Component {
             {historyData.map(dateCountObj => {
               const { data } = dateCountObj;
               return (
-                <li key={dateCountObj.id}>
+                <li
+                  key={dateCountObj.sectionId}
+                  onClick={() => {
+                    handleClickSiderHistory(dateCountObj.sectionId, dateCountObj.attendanceCount, dateCountObj.attendanceRate, dateCountObj.time)
+                  }}
+                >
                   <div className={styles.dateRate}>
-                    <span className={styles.dateColor}>{dateCountObj.date}</span>
-                    <span>{dateCountObj.data.length}次签到</span>
+                    <span className={styles.dateColor}>{dateCountObj.time}</span>
+                    <span className={styles.dateColor}>{dateCountObj.attendanceRate}%</span>
+                    {/* <span>{dateCountObj.data.length}次签到</span> */}
                   </div>
-                  <ul className={styles.detailDataList}>
+                  {/* <ul className={styles.detailDataList}>
                     {data.map(detailData => {
                       return (
                         <li
@@ -36,7 +42,7 @@ export default class HistorySider extends Component {
                         </li>
                       );
                     })}
-                  </ul>
+                  </ul> */}
                 </li>
               );
             })}

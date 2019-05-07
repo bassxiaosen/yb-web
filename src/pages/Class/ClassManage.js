@@ -32,7 +32,7 @@ class ClassManage extends React.Component {
 
   getClassData = () => {
     const { name, currentPage, sortByName } = this.state
-    return request(`${url}/class/search/${currentPage}/10`, {
+    return request(`${url}/classs/search/${currentPage}/10`, {
       method: 'POST',
       body: {
         name, sortByName
@@ -46,7 +46,7 @@ class ClassManage extends React.Component {
         total: totalElements
       })
     }).catch((err) => {
-      message.error(err)
+      message.error('获取班级数据失败')
     })
   }
 
@@ -54,33 +54,45 @@ class ClassManage extends React.Component {
     this.setState({
       loading: true
     })
-    return request(`${url}/class`, {
+    let postObj = {}
+    if (this.state.current.classsId) {
+      const { classsId } = this.state.current
+      postObj = {
+        classsId,
+        ...obj,
+      }
+    } else {
+      postObj = {
+        ...obj
+      }
+    }
+    return request(`${url}/classs`, {
       method: 'POST',
-      body: obj
+      body: postObj
     }).then((data) => {
-      if (this.state.current.classId) {
+      if (this.state.current.classsId) {
         this.setState({loading: false})
         message.success('修改成功')
       } else {
         message.success('添加成功')
       }
     }).catch((err) => {
-      console.log(err)
-      // message.error(err)
+      // console.log(err)
+      message.error('添加班级数据失败')
     })
   }
 
-  deleteClassData = (classId) => {
+  deleteClassData = (classsId) => {
     this.setState({
       loading: true
     })
-    return request(`${url}/class/${classId}`,{ method: 'DELETE' })
+    return request(`${url}/classs/${classsId}`,{ method: 'DELETE' })
       .then((response) => {
         this.setState({loading: false})
         message.success('删除成功')
       }).catch((err) => {
-        console.log(err)
-        // message.error(err)
+        // console.log(err)
+        message.error('删除班级失败')
       })
   }
 
@@ -137,7 +149,7 @@ class ClassManage extends React.Component {
             <Divider type="vertical" />
             <Popconfirm
               title="确认删除此课程？"
-              onConfirm={this.onClickDelete.bind(this, record.classId)}
+              onConfirm={this.onClickDelete.bind(this, record.classsId)}
             >
               <a href="javascript:;">删除</a>
             </Popconfirm>
@@ -183,7 +195,7 @@ class ClassManage extends React.Component {
               </Col>
             </Row>
           </div>
-          <Table loading={loading} rowKey={record => record.classId} dataSource={data} columns={columns} pagination={pagination}/>
+          <Table loading={loading} rowKey={record => record.classsId} dataSource={data} columns={columns} pagination={pagination}/>
         </Card>
         <EditClass
           ref={this.modalForm}

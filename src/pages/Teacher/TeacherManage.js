@@ -71,7 +71,12 @@ class TeacherManage extends React.Component {
     return request(`${url}/teacher/search/${currentPage}/10`, {
       method: 'POST',
       body: {
-        teacherNum, academyId, truename, sortByTeacherNum
+        teacherNum,
+        academy: {
+          academyId,
+        },
+        truename,
+        sortByTeacherNum
       }
     }).then((response) => {
       const { data } = response
@@ -82,7 +87,7 @@ class TeacherManage extends React.Component {
         total: totalElements
       })
     }).catch((err) => {
-      message.error(err)
+      message.error('获取数据失败')
     })
   }
 
@@ -95,7 +100,7 @@ class TeacherManage extends React.Component {
         academyArr: content
       })
     }).catch(e => {
-      message.error(e)
+      message.error('获取学院数据失败')
     })
   }
 
@@ -103,9 +108,28 @@ class TeacherManage extends React.Component {
     this.setState({
       loading: true
     })
+    // 修改和添加传的不一样，修改的时候要带上id
+    let postObj = {}
+    if (this.state.current.teacherId) {
+      const {teacherId} = this.state.current
+      postObj = {
+        teacherId,
+        ...obj,
+        academy: {
+          academyId: obj.academyId
+        }
+      }
+    } else {
+      postObj = {
+        ...obj,
+        academy: {
+          academyId: obj.academyId
+        }
+      }
+    }
     return request(`${url}/teacher`, {
       method: 'POST',
-      body: obj
+      body: postObj
     }).then((data) => {
       if (this.state.current.teacherId) {
         this.setState({loading: false})
@@ -115,7 +139,7 @@ class TeacherManage extends React.Component {
       }
     }).catch((err) => {
       console.log(err)
-      // message.error(err)
+      message.error('创建教师数据失败')
     })
   }
 
@@ -139,7 +163,16 @@ class TeacherManage extends React.Component {
 
   openModal = async record => {
     const ref = this.modalForm.current;
-    ref.setFieldsValue(record);
+    if (record.teacherId) {
+      ref.setFieldsValue({
+        ...record,
+        academyId: record.academy.academyId
+      });
+    } else {
+      ref.setFieldsValue({
+        ...record,
+      });
+    }
     this.setState({ current: record, visible: true });
   };
 
@@ -176,7 +209,7 @@ class TeacherManage extends React.Component {
     const columns = [
       { title: '教师工号', dataIndex: 'teacherNum', key: 'teacherNum' },
       { title: '教师姓名', dataIndex: 'truename', key: 'truename' },
-      { title: '教师所属学院', dataIndex: 'academy', key: 'academy' },
+      { title: '教师所属学院', dataIndex: 'academy.name', key: 'academy' },
       {
         title: '教师任教课程',
         key: 'course',

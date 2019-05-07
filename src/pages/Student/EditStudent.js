@@ -46,7 +46,7 @@ class EditStudent extends React.Component {
             {getFieldDecorator('studentNum', { rules: [{ required: true, message: '请输入学号' }] })(<Input />)}
           </FormItem>
           <FormItem label="学生姓名">
-            {getFieldDecorator('trueName', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
+            {getFieldDecorator('truename', { rules: [{ required: true, message: '请输入姓名' }] })(<Input />)}
           </FormItem>
           <FormItem label="学院">
             {getFieldDecorator('academyId', { rules: [{ required: true, message: '请选择学院' }] })(
@@ -65,14 +65,15 @@ class EditStudent extends React.Component {
             )}
           </FormItem>
           <FormItem label="班级">
-            {getFieldDecorator('classId', { rules: [{ required: true, message: '请选择班级' }] })(
-              <Select showSearch
+            {getFieldDecorator('classsId', { rules: [{ required: true, message: '请选择班级' }] })(
+              <Select
+                showSearch
                 optionFilterProp="children"
               >
                 {classArr.map((item, index) => {
                   return (
-                    <Option key={item.classId} value={item.classId}>
-                      {item.className}
+                    <Option key={item.classsId} value={item.classsId}>
+                      {item.name}
                     </Option>
                   );
                 })}
@@ -82,7 +83,7 @@ class EditStudent extends React.Component {
           <FormItem label="学生密码">
             {getFieldDecorator('password'
               // , { rules: [{ required: true, message: '请输入密码' }] }
-            )(<Input />)}
+            )(<Input type="password" />)}
           </FormItem>
         </Form>
       </Modal>

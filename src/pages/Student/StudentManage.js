@@ -40,7 +40,7 @@ class StudentManage extends React.Component {
       studentNum: '', // 学号
       truename: '', // 真实姓名
       academyId: '', // 学院id
-      className: '', // 班级名称
+      classsName: '', // 班级名称
       sortByStudentNum: 0,
     };
     this.modalForm = React.createRef();
@@ -48,7 +48,7 @@ class StudentManage extends React.Component {
 
   async componentDidMount() {
     await this.getAcademyData()
-    // await this.getClassData()
+    await this.getClassData()
     await this.getStudentData()
   }
 
@@ -56,11 +56,19 @@ class StudentManage extends React.Component {
     this.setState({
       loading: true
     })
-    const { studentNum, truename, academyId, className, currentPage, sortByStudentNum } = this.state
+    const { studentNum, truename, academyId, classsName, currentPage, sortByStudentNum } = this.state
     return request(`${url}/student/search/${currentPage}/10`, {
       method: 'POST',
       body: {
-        studentNum, academyId, truename, className, sortByStudentNum
+        studentNum,
+        truename,
+        academy: {
+          academyId,
+        },
+        classs: {
+          classsName,
+        },
+        sortByStudentNum
       }
     }).then((response) => {
       const { data } = response
@@ -71,7 +79,7 @@ class StudentManage extends React.Component {
         total: totalElements
       })
     }).catch((err) => {
-      message.error(err)
+      message.error('获取学生数据失败')
     })
   }
 
@@ -84,12 +92,12 @@ class StudentManage extends React.Component {
         academyArr: content,
       })
     }).catch(e => {
-      message.error(e)
+      message.error('获取学院数据失败')
     })
   }
 
   getClassData = () => {
-    return request(`${url}/class/search/1/10000`, {
+    return request(`${url}/classs/search/1/10000`, {
       method: 'POST',
       body: {
         sortByName: 0
@@ -100,7 +108,7 @@ class StudentManage extends React.Component {
         classArr: content,
       })
     }).catch(e => {
-      message.error(e)
+      message.error('获取班级数据失败')
     })
   }
 
@@ -108,9 +116,34 @@ class StudentManage extends React.Component {
     this.setState({
       loading: true
     })
+    const { academyId, classsId } = obj
+    let postObj = {}
+    if (this.state.current.studentId) {
+      const {studentId} = this.state.current
+      postObj = {
+        ...obj,
+        studentId,
+        academy: {
+          academyId
+        },
+        classs: {
+          classsId
+        }
+      }
+    } else {
+      postObj = {
+        ...obj,
+        academy: {
+          academyId
+        },
+        classs: {
+          classsId
+        }
+      }
+    }
     return request(`${url}/student`, {
       method: 'POST',
-      body: obj
+      body: postObj
     }).then((data) => {
       if (this.state.current.studentId) {
         this.setState({loading: false})
@@ -144,7 +177,15 @@ class StudentManage extends React.Component {
 
   openModal = record => {
     const ref = this.modalForm.current;
-    ref.setFieldsValue(record);
+    if (record.studentId) {
+      ref.setFieldsValue({
+        ...record,
+        academyId: record.academy.academyId,
+        classsId: record.classs.classsId
+      });
+    } else {
+      ref.setFieldsValue(record)
+    }
     this.setState({ current: record, visible: true });
   };
 
@@ -179,8 +220,8 @@ class StudentManage extends React.Component {
     const columns = [
       { title: '学生学号', dataIndex: 'studentNum', key: 'studentNum' },
       { title: '学生姓名', dataIndex: 'truename', key: 'truename' },
-      { title: '学生所属学院', dataIndex: 'academy', key: 'academy' },
-      { title: '学生班级', dataIndex: 'className', key: 'className' },
+      { title: '学生所属学院', dataIndex: 'academy.name', key: 'academy' },
+      { title: '学生班级', dataIndex: 'classs.name', key: 'className' },
       {
         title: '操作',
         key: 'operation',
@@ -238,7 +279,7 @@ class StudentManage extends React.Component {
                 <Button disabled={loading} type="primary" onClick={this.handleSearch}>搜索</Button>
               </Col>
               <Col span={10}>
-                <Input allowClear onChange={this.handleChangeSearch.bind(this, 'className')} disabled={loading} placeholder="请输入学生班级进行查询"/>
+                <Input allowClear onChange={this.handleChangeSearch.bind(this, 'classsName')} disabled={loading} placeholder="请输入学生班级进行查询"/>
               </Col>
               <Col span={8} offset={2}>
                 <Select allowClear onChange={this.handleChangeSearch.bind(this, 'academyId')} style={{ width: '100%' }} disabled={loading} placeholder="选择学院">

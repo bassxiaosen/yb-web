@@ -11,6 +11,32 @@ import url from "@/utils/url"
 
 const { Sider, Content } = Layout;
 
+const getLocation = function() {
+  return new Promise(function(resolve, reject) {
+    // 初始化高德地图插件,注意 GetLocation可以不对应html中的控件,但必须有值
+    var mapObj = new window.AMap.Map('GetLocation');
+    // 加载定位插件
+    mapObj.plugin('AMap.Geolocation', function () {
+        const geolocation = new window.AMap.Geolocation({
+            enableHighAccuracy: true,// 是否使用高精度定位，默认:true
+            timeout: 10000,          // 超过10秒后停止定位，默认：无穷大
+            maximumAge: 0,           // 定位结果缓存0毫秒，默认：0
+            convert: true,           // 自动偏移坐标，偏移后的坐标为高德坐标，默认：true
+        });
+        mapObj.addControl(geolocation);
+        geolocation.getCurrentPosition(); // 也可采取callback方法 与以下的事件监听方法二选一
+        AMap.event.addListener(geolocation, 'complete', (data) => {
+          const {position} = data
+          const { lat, lng } = position // 获取纬度、经度
+          resolve(data)
+        });// 返回定位信息
+        AMap.event.addListener(geolocation, 'error', (error) => {
+          reject(error)
+        }); // 返回定位出错信息
+    });
+  })
+}
+
 export default class CheckIn extends Component {
   constructor(props) {
     super(props);
@@ -48,9 +74,9 @@ export default class CheckIn extends Component {
       //结果页数据
       noCheckInStudent: [{ name: '缺勤1', id: '1' }, { name: '缺勤2', id: '2' }],
 
-      historyLoading: false,
+      historyLoading: true,
       buttonLoading: false,
-      areaLoading: true,
+      tableLoading: true,
 
       // 哪一节课的id
       sectionId: '',
@@ -58,21 +84,33 @@ export default class CheckIn extends Component {
       currentPage: 1,
       total: 0,
       detailData: [],
-      courseDetailData: {}
+      courseDetailData: {academy: {}, classs: {studentCount: 0}, teacher: {}},
+
+      count: 0,
+      rate: 0,
+      time: ''
     };
   }
 
   async componentDidMount() {
-    // await this.getCourseDetailData()
-    // await this.getHistoryData()
+    await this.getCourseDetailData()
+    await this.getHistoryData()
   }
 
-  getInitCourseAttendacne = () => {
-    const { courseId } = this.props.params
-    return request(`${url}/attendance/initAttendancesOfSection/${courseId}`, {
-      method:' GET'
+  getInitCourseAttendacne = (positionData) => {
+    console.log(positionData)
+    let siteStr = ''
+    if (positionData) {
+      const { position: { lat, lng } } = positionData
+      siteStr = `?site="lat=${lat} lng=${lng}"`
+    }
+    const { courseId } = this.props.match.params
+    // console.log(courseId)
+    return request(`${url}/attendance/initAttendancesOfSection/${courseId}${siteStr}`, {
+      method:'GET'
     }).then((response) => {
       const { data: {sectionId} } = response
+      console.log(`sectionId: ${sectionId}`)
       this.setState({
         checkInQRCodeID: sectionId,
         sectionId
@@ -83,7 +121,7 @@ export default class CheckIn extends Component {
         newCheckIn: false,
         visibleCheckPage: true
       })
-      throw new Error('fail')
+      throw new Error('开启 fail')
     })
   }
 
@@ -91,9 +129,9 @@ export default class CheckIn extends Component {
     const { courseId } = this.props.match.params
     return request(`${url}/course/${courseId}`, { method: 'GET' })
     .then((response) => {
-      const { data: { content } } = response
+      const { data } = response
       this.setState({
-        courseDetailData: content
+        courseDetailData: data
       })
     })
     .catch((err) => {
@@ -110,8 +148,10 @@ export default class CheckIn extends Component {
     return request(`${url}/attendance/queryAttendancesOfCourse/1/10000`,{
       method: 'POST',
       body: {
-        courseId,
-        sortBystartDate: -1
+        course :{
+          courseId,
+        },
+        sortByDate: -1
       }
     }).then((response) => {
       const { data: {content} } = response
@@ -125,59 +165,89 @@ export default class CheckIn extends Component {
   }
 
   getAttendanceDetail = () => {
+    this.setState({ tableLoading: true})
     const { sectionId, currentPage } = this.state
-    return request(`${url}/attendance/queryAttendancesOfSection/${sectionId}/${currentPage}/10`, {
+    return request(`${url}/attendance/queryAttendancesOfSection/${currentPage}/10`, {
       method: 'POST',
       body: {
         sectionId,
-        sortField: 'studentNum',
-        direction: 1
+        // sortField: 'studentNum',
+        // direction: 1
       }
     }).then(response => {
+      // console.log(response)
       const {data: {content}} = response
-      this.setState({ detailData: content })
+      this.setState({ detailData: content, tableLoading: false })
     }).catch(err => {
+      console.log(err)
       message.error('获取考勤结果失败')
+    })
+  }
+
+  updateAttendance = (studentId, state) => {
+    this.setState({ tableLoading: true})
+    return request(`${url}/attendance/updateAttendance`, {
+      method: 'POST',
+      body: {
+        sectionId: this.state.sectionId,
+        student: {
+          studentId: studentId
+        },
+        state
+      }
+    }).then(response => {
+      this.getAttendanceDetail()
+      this.getHistoryData()
+      message.success('修改出勤情况成功')
+    }).catch(err => {
+      message.error('修改出勤情况失败')
     })
   }
 
   deleteAttendanceData = () => {
     this.setState({ historyLoading: true })
     const { sectionId } = this.state
-    return request(`${url}/deleteAttendancesOfSection/${sectionId}`, {
+    return request(`${url}/attendance/deleteAttendancesOfSection/${sectionId}`, {
       method: 'DELETE'
     }).then((response) => {
       message.success('删除成功')
       this.setState({
         visibleCheckPage: true,
         newCheckIn: false,
+        isInit: true, // 删除后回到初始化状态
       })
     }).catch(err => {
       message.error('删除失败')
     })
   }
 
+  handleUpdateAttendance = (studentId, state) => {
+    this.updateAttendance(studentId, state)
+  }
+
   handleChangeDetailPage = (page) => {
-    this.setState({currentPage: page})
-    this.getAttendanceDetail()
+    this.setState({currentPage: page}, () => {
+      this.getAttendanceDetail()
+    })
   }
 
-  handleDeleteAttendance = () => {
-    // await this.deleteAttendanceData()
-    // await this.getHistoryData()
+  handleDeleteAttendance = async () => {
+    await this.deleteAttendanceData()
+    await this.getHistoryData()
   }
 
-  handleClickSiderHistory = checkInId => {
+  handleClickSiderHistory = (checkInId, count, rate, time) => {
     this.setState(
       {
         visibleCheckPage: false, // 看结果
         newCheckIn: false,
         currentPage: 1, // 重回第一页
-        sectionId: checkInId
+        sectionId: checkInId,
+        count, rate, time
       },
       () =>{
         console.log(this.state.newCheckIn, this.state.visibleCheckPage)
-        // this.getAttendanceDetail()
+        this.getAttendanceDetail()
       }
     );
     message.success(checkInId);
@@ -196,10 +266,25 @@ export default class CheckIn extends Component {
   handleOpenNewCheckIn = async () => {
     this.setState({
       buttonLoading: true,
+      historyLoading: true,
+      isInit: false
     })
+    let positionData = null
+    if (this.state.isGPS) {
+      try {
+        positionData = await getLocation()
+      } catch (e) {
+        message.error('获取地理位置失败')
+        console.log(e)
+      }
+    }
     try {
-      // await this.getInitCourseAttendacne()
+      await this.getInitCourseAttendacne(positionData)
     } catch(e) {
+      console.log(e)
+      this.setState({
+        buttonLoading: false
+      })
       return false
     }
     console.log(this.state.newCheckIn);
@@ -208,7 +293,7 @@ export default class CheckIn extends Component {
     this.setState(
       {
         targetTime,
-        checkInQRCodeID: 'adgo83760asahiua', // 等接口放通
+        // checkInQRCodeID: 'adgo83760asahiua', // 等接口放通
         newCheckIn: true,
         visibleCheckPage: true,
         checkInStudent: [],
@@ -216,18 +301,18 @@ export default class CheckIn extends Component {
       () => console.log(this.state.newCheckIn, this.state.visibleCheckPage)
     );
     //开启签到后，要定时的发请求给后端，即轮询查找哪些学生已经签到。 这里是通过定时器造假数据
-    let num = 1;
-    window.checkInTimer = window.setInterval(() => {
-      const { checkInStudent } = this.state;
-      this.setState(
-        {
-          checkInStudent: checkInStudent.concat({ name: `学生${num}`, id: `${num}` }),
-        },
-        () => {
-          num = num + 1;
-        }
-      );
-    }, 2000);
+    // let num = 1;
+    // window.checkInTimer = window.setInterval(() => {
+    //   const { checkInStudent } = this.state;
+    //   this.setState(
+    //     {
+    //       checkInStudent: checkInStudent.concat({ name: `学生${num}`, id: `${num}` }),
+    //     },
+    //     () => {
+    //       num = num + 1;
+    //     }
+    //   );
+    // }, 2000);
   };
 
   handleEndCheckIn = async isManual => {
@@ -244,16 +329,16 @@ export default class CheckIn extends Component {
         buttonLoading: false,
         currentPage: 1, // 重回第一页
       });
-      // await this.getHistoryData()
-      // await this.getAttendanceDetail()
+      this.getHistoryData()
+      this.getAttendanceDetail()
       return console.log('手动结束');
     } else if (isManual === false) {
       if (this.state.isInit) { // 初始化时不执行过任何业务操作
         this.setState({ isInit: false });
       } else {
         this.setState({ newCheckIn: false, visibleCheckPage: false, checkInQRCodeID: '', buttonLoading: false, currentPage: 1 });
-        // await this.getHistoryData()
-        // await this.getAttendanceDetail()
+        this.getHistoryData()
+        this.getAttendanceDetail()
         console.log('自动结束');
       }
     }
@@ -274,7 +359,12 @@ export default class CheckIn extends Component {
       buttonLoading,
       currentPage,
       total,
-      detailData
+      detailData,
+      courseDetailData,
+      tableLoading,
+      count,
+      rate,
+      time
     } = this.state;
     const myStyles = {
       startCheckArea: {
@@ -293,7 +383,7 @@ export default class CheckIn extends Component {
         <Card>
           <Layout>
             <Sider className={styles.checkInSider}>
-              <header className={styles.siderHeader}>课程总人数：60人</header>
+              <header className={styles.siderHeader}>课程总人数：{courseDetailData.classs.studentCount}人</header>
               <div style={myStyles.startCheckArea}>
                 {newCheckIn ? (
                   '签到中'
@@ -349,7 +439,12 @@ export default class CheckIn extends Component {
                   detailData={detailData}
                   currentPage={currentPage}
                   total={total}
+                  tableLoading={tableLoading}
+                  count={count}
+                  rate={rate}
+                  time={time}
                   handleChangeDetailPage={this.handleChangeDetailPage}
+                  handleUpdateAttendance={this.handleUpdateAttendance}
                 />
               )}
             </Content>

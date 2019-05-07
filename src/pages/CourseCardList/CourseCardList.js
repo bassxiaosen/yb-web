@@ -53,13 +53,13 @@ export default class CourseCardList extends Component {
 
       teacherId: '', // 教师id
 
-      loading: false,
+      loading: true,
     };
   }
 
   async componentDidMount() {
-    // await getAcademyData()
-    // await getCourseData()
+    await this.getAcademyData()
+    await this.getCourseData()
   }
 
   getCourseData = () => {
@@ -70,8 +70,18 @@ export default class CourseCardList extends Component {
     return request(`${url}/course/search/${currentPage}/10`, {
       method: 'POST',
       body: {
-        teacherId: localStorage.getItem('userId'),
-        currentPage, academyId, name, className, teacherTruename
+        teacher: {
+          teacherId: localStorage.getItem('userId'),
+          teacherTruename
+        },
+        currentPage,
+        academy: {
+          academyId,
+        },
+        name,
+        classs: {
+          classsName: className,
+        }
       }
     }).then((response) => {
       const { data } = response
@@ -82,7 +92,8 @@ export default class CourseCardList extends Component {
         total: totalElements
       })
     }).catch((err) => {
-      message.error(err)
+      message.error('获取课程失败')
+      console.log(err)
     })
   }
 
@@ -95,7 +106,8 @@ export default class CourseCardList extends Component {
         academyArr: content,
       })
     }).catch(e => {
-      message.error(e)
+      message.error('获取学院你失败')
+      console.log(e)
     })
   }
 
@@ -116,7 +128,7 @@ export default class CourseCardList extends Component {
   };
 
   render() {
-    const { coursesArr, currentPage, total, academyArr, loading } = this.state;
+    const { coursesArr, currentPage, total, academyArr, loading, data } = this.state;
     const { handleChangeSearch } = this
     const { match } = this.props;
     const cardStyle = { marginBottom: '24px' };
@@ -164,21 +176,21 @@ export default class CourseCardList extends Component {
           </div>
           <Row gutter={24}>
             <Spin spinning={loading}>
-              {coursesArr.map(item => (
-                <Col key={item.id} span={6}>
+              {data.map(item => (
+                <Col key={item.courseId} span={6}>
                   <Card
                     onClick={() => {
-                      router.push(`${match.path}/teacherCourseDetail/${item.id}`);
+                      router.push(`${match.path}/teacherCourseDetail/${item.courseId}`);
                     }}
                     style={cardStyle}
                     hoverable
                     title={item.name}
                   >
-                    <p>班级：{item.class}</p>
-                    <p>上课人数：{item.totalNum}</p>
-                    <p>上课时间：{item.date}</p>
-                    <p>任课教师：{item.teacher}</p>
-                    <p>所属学院：{item.academy}</p>
+                    <p>班级：{item.classs.name}</p>
+                    <p>上课人数：{item.studentCount}</p>
+                    <p>上课时间：{item.giveDate}</p>
+                    <p>任课教师：{item.teacher.truename}</p>
+                    <p>所属学院：{item.academy.name}</p>
                   </Card>
                 </Col>
               ))}

@@ -16,34 +16,6 @@ export default class CourseCardList extends Component {
       data: [],
       academyArr: [],
       coursesArr: [
-        { id: 1, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上',teacher: '张三',
-        academy: '医学信息工程学院' },
-        {
-          id: 2,
-          name: 'C++程序设计',
-          totalNum: '65',
-          class: '15医工计算机',
-          date: '2015下',
-          teacher: '李四',
-          academy: '医学信息工程学院'
-        },
-        {
-          id: 3,
-          name: 'Java程序设计',
-          totalNum: '65',
-          class: '15医工计算机',
-          date: '2016上',
-          teacher: '王五',
-          academy: '医学信息工程学院'
-        },
-        { id: 4, name: 'C#程序设计', totalNum: '65', class: '15医工计算机', date: '2016下', teacher: '王五',
-        academy: '医学信息工程学院' },
-        { id: 5, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上', teacher: '王五',
-        academy: '医学信息工程学院' },
-        { id: 6, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上', teacher: '王五',
-        academy: '医学信息工程学院' },
-        { id: 7, name: 'C程序设计', totalNum: '65', class: '15医工计算机', date: '2015上', teacher: '王五',
-        academy: '医学信息工程学院' },
       ],
       // 查询数据
       academyId: '', // 学院
@@ -58,8 +30,8 @@ export default class CourseCardList extends Component {
   }
 
   async componentDidMount() {
-    // await getAcademyData()
-    // await getCourseData()
+    await this.getAcademyData()
+    await this.getCourseData()
   }
 
   getCourseData = () => {
@@ -70,14 +42,24 @@ export default class CourseCardList extends Component {
     return request(`${url}/course/searchByStudent/${currentPage}/10`, {
       method: 'POST',
       body: {
-        studentId: localStorage.getItem('userId'),
-        currentPage, academyId, name, className, teacherTruename, sortByGiveDate: 1
+        student: {
+          studentId: localStorage.getItem('userId'),
+        },
+        currentPage,
+        academy: {
+          academyId,
+        },
+        name, className,
+        teacher: {
+          truename: teacherTruename,
+        },
+        sortByGiveDate: 1
       }
     }).then((response) => {
       const { data } = response
       const { content, size, totalElements } = data
       this.setState({
-        data: content,
+        coursesArr: content,
         loading: false,
         total: totalElements
       })
@@ -165,20 +147,20 @@ export default class CourseCardList extends Component {
           <Row gutter={24}>
             <Spin spinning={loading}>
               {coursesArr.map(item => (
-                <Col key={item.id} span={6}>
+                <Col key={item.courseId} span={6}>
                   <Card
                     onClick={() => {
-                      router.push(`${match.path}/studentCourseDetail/${item.id}`);
+                      router.push(`${match.path}/studentCourseDetail/${item.courseId}`);
                     }}
                     style={cardStyle}
                     hoverable
                     title={item.name}
                   >
-                    <p>班级：{item.class}</p>
-                    <p>上课人数：{item.totalNum}</p>
-                    <p>上课时间：{item.date}</p>
-                    <p>任课教师：{item.teacher}</p>
-                    <p>所属学院：{item.academy}</p>
+                    <p>班级：{item.classs.name}</p>
+                    <p>上课人数：{item.classs.studentCount}</p>
+                    <p>上课时间：{item.giveDate}</p>
+                    <p>任课教师：{item.teacher.truename}</p>
+                    <p>所属学院：{item.academy.name}</p>
                   </Card>
                 </Col>
               ))}

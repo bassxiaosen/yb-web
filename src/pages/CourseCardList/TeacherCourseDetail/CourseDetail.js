@@ -36,6 +36,7 @@ import { log } from 'util';
 import qs from 'qs'
 import request from "@/utils/request"
 import url from "@/utils/url"
+import { getPassWeek } from "@/utils/gettime"
 
 const Search = Input.Search;
 export default class CourseDetail extends Component {
@@ -43,12 +44,12 @@ export default class CourseDetail extends Component {
     super(props);
     this.state = {
       data: [
-        {
-          studentId: '2015081004',
-          studentTruename: '蔡宇森',
-          studentNum: '2015081004',
-          attendanceRateOfStudent: '99%'
-        },
+        // {
+        //   studentId: '2015081004',
+        //   studentTruename: '蔡宇森',
+        //   studentNum: '2015081004',
+        //   attendanceRateOfStudent: '99%'
+        // },
       ],
       visible: false,
       current: {},
@@ -58,16 +59,19 @@ export default class CourseDetail extends Component {
       truename: '',
       loading: true,
       courseDetailData: {
-        name: 'C语言程序设计',
-        teacherTruename: '张三',
-        giveDate: '2015上',
-        academyName: '医学信息工程学院',
-        studentCount: 85,
-        className: '15医工计算机4'
+        name: '',
+        teacher: {},
+        academy: {},
+        classs: {},
+        teacherTruename: '',
+        giveDate: '',
+        academyName: '',
+        studentCount: 0,
+        className: ''
       },
       courseAttendanceData: {
-        totalAttendanceNum: 10,
-        totalAttendanceRate: 98.75,
+        totalAttendanceNum: 0,
+        totalAttendanceRate: 0,
       }
     };
     this.modalForm = React.createRef();
@@ -76,18 +80,19 @@ export default class CourseDetail extends Component {
   async componentDidMount() {
     const { courseId } = this.props.match.params // 获取到courseId
     console.log(courseId)
-    // await this.getCourseDetailData()
-    // await this.getCourseAttendanceData()
-    // await this.getCourseStudent()
+    console.log(getPassWeek())
+    await this.getCourseDetailData()
+    await this.getCourseAttendanceData()
+    await this.getCourseStudent()
   }
 
   getCourseDetailData = () => {
     const { courseId } = this.props.match.params
     return request(`${url}/course/${courseId}`, { method: 'GET' })
     .then((response) => {
-      const { data: { content } } = response
+      const { data } = response
       this.setState({
-        courseDetailData: content
+        courseDetailData: data
       })
     })
     .catch((err) => {
@@ -98,11 +103,11 @@ export default class CourseDetail extends Component {
 
   getCourseAttendanceData = () => {
     const { courseId } = this.props.match.params
-    return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'GET' })
+    return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'POST' })
     .then((response) => {
-      const { data: { content } } = response
+      const { data } = response
       this.setState({
-        courseAttendanceData: content
+        courseAttendanceData: data
       })
     })
     .catch((err) => {
@@ -117,12 +122,18 @@ export default class CourseDetail extends Component {
     })
     const { courseId } = this.props.match.params
     const { studentNum, currentPage, truename, sortField, direction } = this.state
-    return request(`${url}/attendance/queryAttendanceRateOfStudents/${currentPage}/10`,
+    return request(`${url}/attendance/queryAttendancesRateOfStudents/${currentPage}/10`,
     {
       method: 'POST',
       body: {
-        studentNum, truename, sortField, direction,
-        courseId
+        student: {
+          studentNum,
+          truename,
+        },
+        sortField, direction,
+        course: {
+          courseId
+        }
       }
     })
     .then((response) => {
@@ -179,7 +190,9 @@ export default class CourseDetail extends Component {
       total,
       loading,
       courseDetailData: {
-        name, teacherTruename, className,  giveDate, studentCount, academyName
+        name,
+        teacher,
+        classs, giveDate, academy
       },
       courseAttendanceData: {
         totalAttendanceNum, totalAttendanceRate
@@ -263,14 +276,15 @@ export default class CourseDetail extends Component {
         title: '学生学号',
       },
       {
-        dataIndex: 'studentTruename',
-        key: 'studentTruename',
+        dataIndex: 'truename',
+        key: 'truename',
         title: '学生姓名',
       },
       {
-        dataIndex: 'attendanceRateOfStudent',
+        // dataIndex: 'attendanceRate',
         key: 'attendanceRateOfStudent',
         title: '出勤率',
+        render: (text, record) => `${record.attendanceRate}%`
       },
       // {
       //   dataIndex: 'subject',
@@ -311,15 +325,15 @@ export default class CourseDetail extends Component {
           <div className={styles.header}>
             <Row>
               <Col span={6}>课程名称：{name}</Col>
-              <Col span={6}>任课教师：{teacherTruename}</Col>
+              <Col span={6}>任课教师：{teacher.truename}</Col>
               <Col span={6}>开课时间：{giveDate}</Col>
-              <Col span={6}>课程所属学院：{academyName}</Col>
+              <Col span={6}>课程所属学院：{academy.name}</Col>
             </Row>
           </div>
           <div className={styles.header}>
             <Row>
-              <Col span={6}>课程总人数：{studentCount}人</Col>
-              <Col span={6}>上课班级：{className}</Col>
+              <Col span={6}>课程总人数：{classs.studentCount}人</Col>
+              <Col span={6}>上课班级：{classs.name}</Col>
               <Col span={6}>总考勤次数：{totalAttendanceNum}次</Col>
               <Col span={6}>课程平均出勤率：{totalAttendanceRate}%</Col>
             </Row>

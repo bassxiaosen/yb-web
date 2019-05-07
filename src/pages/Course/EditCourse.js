@@ -19,7 +19,7 @@ class EditCourse extends React.Component {
         const rangeValue = values['time'];
         const value = {
           ...values,
-          time: [rangeValue[0].format('YYYY-MM-DD'), rangeValue[1].format('YYYY-MM-DD')],
+          // time: [rangeValue[0].format('YYYY-MM-DD'), rangeValue[1].format('YYYY-MM-DD')],
         };
         this.props.handleOk(value);
         this.props.handleCancel();
@@ -70,14 +70,14 @@ class EditCourse extends React.Component {
             )}
           </FormItem>
           <FormItem label="上课班级">
-            {getFieldDecorator('classId', { rules: [{ required: true, message: "请输入上课班级"}] })(
+            {getFieldDecorator('classsId', { rules: [{ required: true, message: "请输入上课班级"}] })(
               <Select
                 showSearch
                 optionFilterProp="children"
               >
                 {classArr.map((item, index) => {
                   return (
-                    <Option key={item.classId} value={item.classId}>
+                    <Option key={item.classsId} value={item.classsId}>
                       {item.name}
                     </Option>
                   );
@@ -94,7 +94,7 @@ class EditCourse extends React.Component {
                 {teacherArr.map((item, index) => {
                   return (
                     <Option key={item.teacherId} value={item.teacherId}>
-                      {item.truename}
+                      {`${item.truename}（${item.teacherNum}）`}
                     </Option>
                   );
                 })}

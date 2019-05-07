@@ -36,20 +36,32 @@ import request from "@/utils/request"
 import url from "@/utils/url"
 
 const Search = Input.Search;
+// function parseState(state) {
+//   switch (state) {
+//     case 1:
+//       return '签到成功'
+//     case 2:
+//       return '迟到'
+//     case 3:
+//       return '请假'
+//     case 4:
+//       return '旷课'
+//     case 5:
+//       return '签到成功（定位失败）'
+//     case 6:
+//       return '迟到（未开启定位）'
+//   }
+// }
 function parseState(state) {
   switch (state) {
+    case 0:
+      return '待签到'
     case 1:
-      return '签到成功'
+      return '已签到'
     case 2:
-      return '迟到'
-    case 3:
       return '请假'
-    case 4:
+    case 3:
       return '旷课'
-    case 5:
-      return '签到成功（定位失败）'
-    case 6:
-      return '迟到（未开启定位）'
   }
 }
 export default class CourseDetail extends Component {
@@ -61,46 +73,53 @@ export default class CourseDetail extends Component {
           startDate: '2019-04-10 15:00',
           state: 1,
         },
+        {
+          startDate: '2019-04-15 15:00',
+          state: 2
+        }
       ],
       visible: false,
       current: {},
       currentPage: 1,
       total: 0,
-      loading: true,
+      loading: false,
       courseDetailData: {
-        name: 'C语言程序设计',
-        teacherTruename: '张三',
-        giveDate: '2015上',
-        academyName: '医学信息工程学院',
-        studentCount: 85,
-        className: '15医工计算机4'
+        name: '',
+        teacherTruename: '',
+        giveDate: '',
+        academyName: '',
+        studentCount: 0,
+        className: '',
+        teacher: {},
+        academy: {},
+        classs: {}
       },
       courseAttendanceData: {
-        totalAttendanceNum: 10,
-        totalAttendanceRate: 98.75,
+        totalAttendanceNum: 0,
+        totalAttendanceRate: 0,
       },
       personAttendanceData: {
-        AttendanceCountOfStudent: 10,
-        AttendanceRateOfStudent: 98.75
+        attendanceCount: 0,
+        attendanceRate: 0
       }
     };
     this.modalForm = React.createRef();
   }
 
   async componentDidMount() {
-    // await this.getCourseDetailData()
-    // await this.getCourseAttendanceData()
-    // await this.getPersonalAttendanceData
-    // await this.getCourseStudent()
+    await this.getCourseDetailData()
+    await this.getCourseAttendanceData()
+    await this.getPersonalAttendanceData()
+    await this.getCourseStudent()
   }
 
   getCourseDetailData = () => {
     const { courseId } = this.props.match.params
     return request(`${url}/course/${courseId}`, { method: 'GET' })
     .then((response) => {
-      const { data: { content } } = response
+      const { data } = response
       this.setState({
-        courseDetailData: content
+        courseDetailData: data
       })
     })
     .catch((err) => {
@@ -111,11 +130,11 @@ export default class CourseDetail extends Component {
 
   getPersonalAttendanceData = () => {
     const { courseId } = this.props.match.params
-    return request(`${url}/attendance/queryAttendanceCountAndRateOfStudent/${courseId}/${localStorage.getItem('userId')}`, { method: 'GET' })
+    return request(`${url}/attendance/queryAttendanceCountAndRateOfStudent/${courseId}/${localStorage.getItem('userId')}`, { method: 'POST' })
     .then((response) => {
-      const { data: { content } } = response
+      const { data } = response
       this.setState({
-        courseAttendanceData: content
+        personAttendanceData: data
       })
     })
     .catch((err) => {
@@ -126,11 +145,11 @@ export default class CourseDetail extends Component {
 
   getCourseAttendanceData = () => {
     const { courseId } = this.props.match.params
-    return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'GET' })
+    return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'POST' })
     .then((response) => {
-      const { data: { content } } = response
+      const { data } = response
       this.setState({
-        courseAttendanceData: content
+        courseAttendanceData: data
       })
     })
     .catch((err) => {
@@ -145,20 +164,25 @@ export default class CourseDetail extends Component {
     })
     const { courseId } = this.props.match.params
     const { studentNum, currentPage, truename, sortField, direction } = this.state
-    return request(`${url}/attendance/queryAttendancesRateOfStudent/${currentPage}/10`,
+    return request(`${url}/attendance/queryAttendancesOfStudent/${currentPage}/10`,
     {
       method: 'POST',
       body: {
         sortField: 'startDate',
         direction: 2,
-        courseId,
-        studentId: localStorage.getItem('userId')
+        course: {
+          courseId,
+        },
+        student: {
+          studentId: localStorage.getItem('userId')
+        }
       }
     })
     .then((response) => {
-      const { data: { content } } = response
+      const { data: { content }, totalElements } = response
       this.setState({
         data: content,
+        total: totalElements,
         loading: false,
       })
     })
@@ -198,14 +222,20 @@ export default class CourseDetail extends Component {
       total,
       loading,
       courseDetailData: {
-        name, teacherTruename, className, giveDate, studentCount, academyName
+        name,
+        teacherTruename,
+        className,
+        giveDate,
+        studentCount,
+        academyName,
+        teacher, academy, classs
       },
       courseAttendanceData: {
         totalAttendanceNum, totalAttendanceRate
       },
       personAttendanceData: {
-        AttendanceCountOfStudent,
-        AttendanceRateOfStudent
+        attendanceCount,
+        attendanceRate
       }
     } = this.state;
     const { match } = this.props;
@@ -302,23 +332,23 @@ export default class CourseDetail extends Component {
           <div className={styles.header}>
             <Row>
               <Col span={6}>课程名称：{name}</Col>
-              <Col span={6}>任课教师：{teacherTruename}</Col>
+              <Col span={6}>任课教师：{teacher.truename}</Col>
               <Col span={6}>开课时间：{giveDate}</Col>
-              <Col span={6}>课程所属学院：{academyName}</Col>
+              <Col span={6}>课程所属学院：{academy.name}</Col>
             </Row>
           </div>
           <div className={styles.header}>
             <Row>
-              <Col span={6}>课程总人数：{studentCount}人</Col>
-              <Col span={6}>上课班级：{className}</Col>
+              <Col span={6}>课程总人数：{classs.studentCount}人</Col>
+              <Col span={6}>上课班级：{classs.name}</Col>
               <Col span={6}>总考勤次数：{totalAttendanceNum}次</Col>
-              <Col span={6}>个人出勤次数：{AttendanceCountOfStudent}次</Col>
+              <Col span={6}>个人出勤次数：{attendanceCount}次</Col>
             </Row>
           </div>
           <div className={styles.header}>
             <Row>
               <Col span={6}>课程平均出勤率：{totalAttendanceRate}%</Col>
-              <Col span={6}>个人出勤率：{AttendanceCountOfStudent}%</Col>
+              <Col span={6}>个人出勤率：{attendanceRate}%</Col>
             </Row>
           </div>
           <div className={styles.header}>

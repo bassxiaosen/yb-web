@@ -65,7 +65,7 @@ class CourseManage extends React.Component {
   async componentDidMount() {
     await this.getAcademyData()
     await this.getTeacherData()
-    // await this.getClassData()
+    await this.getClassData()
     await this.getCourseData()
   }
 
@@ -77,7 +77,20 @@ class CourseManage extends React.Component {
     return request(`${url}/course/search/${currentPage}/10`, {
       method: 'POST',
       body: {
-        name, teacherTruename, academyId, className, giveDate, currentPage, direction, sortField
+        name,
+        academy: {
+          academyId,
+        },
+        classs: {
+          name: className
+        },
+        teacher: {
+          teacherId: '',
+          truename: teacherTruename,
+        },
+        giveDate,
+        direction,
+        sortField
       }
     }).then((response) => {
       const { data } = response
@@ -88,7 +101,8 @@ class CourseManage extends React.Component {
         total: totalElements
       })
     }).catch((err) => {
-      message.error(err)
+      message.error('获取课程数据失败')
+      console.log(err)
     })
   }
 
@@ -101,12 +115,12 @@ class CourseManage extends React.Component {
         academyArr: content,
       })
     }).catch(e => {
-      message.error(e)
+      message.error('获取学院数据失败')
     })
   }
 
   getClassData = () => {
-    return request(`${url}/class/search/1/10000`, {
+    return request(`${url}/classs/search/1/10000`, {
       method: 'POST',
       body: {
         sortByName: 0
@@ -117,7 +131,7 @@ class CourseManage extends React.Component {
         classArr: content,
       })
     }).catch(e => {
-      message.error(e)
+      message.error('获取班级数据失败')
     })
   }
 
@@ -125,7 +139,7 @@ class CourseManage extends React.Component {
     return request(`${url}/teacher/search/1/10000`, {
       method: 'POST',
       body: {
-        sortByName: 0
+        sortByTeacherNum: 0
       }
     }).then(response => {
       const { data: { content } } = response
@@ -133,7 +147,7 @@ class CourseManage extends React.Component {
         teacherArr: content,
       })
     }).catch(e => {
-      message.error(e)
+      message.error('获取教师数据失败')
     })
   }
 
@@ -141,9 +155,40 @@ class CourseManage extends React.Component {
     this.setState({
       loading: true
     })
+    const {academyId, classsId, teacherId} = obj
+    let postObj = {}
+    if (this.state.current.courseId) {
+      const {courseId} = this.state.current
+      postObj = {
+        ...obj,
+        courseId,
+        academy: {
+          academyId
+        },
+        classs: {
+          classsId
+        },
+        teacher: {
+          teacherId
+        }
+      }
+    } else {
+      postObj = {
+        ...obj,
+        academy: {
+          academyId
+        },
+        classs: {
+          classsId
+        },
+        teacher: {
+          teacherId
+        }
+      }
+    }
     return request(`${url}/course`, {
       method: 'POST',
-      body: obj
+      body: postObj
     }).then((data) => {
       if (this.state.current.courseId) {
         this.setState({loading: false})
@@ -186,7 +231,16 @@ class CourseManage extends React.Component {
     //   const { time } = copy;
     //   let timeArr = time.map(item => moment(item));
     //   copy.time = timeArr;
-      ref.setFieldsValue(record);
+      if (record.courseId) {
+        ref.setFieldsValue({
+          ...record,
+          academyId: record.academy.academyId,
+          classsId: record.classs.classsId,
+          teacherId: record.teacher.teacherId
+        });
+      } else {
+        ref.setFieldsValue(record)
+      }
       this.setState({ current: record, visible: true });
     // }
   };
@@ -228,9 +282,9 @@ class CourseManage extends React.Component {
           <Link to={`courseManage/courseDetail/${record.courseId}`}>{record.name}</Link>
         ),
       },
-      { title: '课程所属学院', dataIndex: 'academyName', key: 'academyName' },
-      { title: '上课班级', dataIndex: 'className', key: 'className' },
-      { title: '任教老师', dataIndex: 'teacher_truename', key: 'teacher_truename' },
+      { title: '课程所属学院', dataIndex: 'academy.name', key: 'academyName' },
+      { title: '上课班级', dataIndex: 'classs.name', key: 'className' },
+      { title: '任教老师', dataIndex: 'teacher.truename', key: 'teacher_truename' },
       { title: '课程时间', dataIndex: 'giveDate', key: 'giveDate' },
       { title: '课程人数', dataIndex: 'studentCount', key: 'studentCount' },
       // { title: '上课人数', dataIndex: 'renshu', key: 'renshu' },

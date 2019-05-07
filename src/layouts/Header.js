@@ -73,6 +73,10 @@ class HeaderView extends Component {
         type: 'login/logout',
       });
     }
+    if (key === 'changePassword') {
+      this.props.handleChangeModal()
+      return
+    }
   };
 
   handleNoticeVisibleChange = visible => {

@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Layout } from 'antd';
+import { Layout, Modal, Form, Input, message } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
@@ -13,6 +13,8 @@ import PageLoading from '@/components/PageLoading';
 import SiderMenu from '@/components/SiderMenu';
 import getPageTitle from '@/utils/getPageTitle';
 import styles from './BasicLayout.less';
+import request from "@/utils/request"
+import url from "@/utils/url"
 
 // lazy load SettingDrawer
 const SettingDrawer = React.lazy(() => import('@/components/SettingDrawer'));
@@ -44,7 +46,47 @@ const query = {
   },
 };
 
+const ChangePasswordForm = Form.create({name:'changeForm'})(
+  class extends React.Component {
+    render() {
+      const {
+        visible, onCancel, onOk, form
+      } = this.props
+      const { getFieldDecorator } = form
+      return (
+        <Modal
+          visible={visible}
+          title="修改密码"
+          okText="确定"
+          cancelText="取消"
+          onCancel={onCancel}
+          onOk={onOk}
+        >
+          <Form layout="vertical">
+            <Form.Item label="新密码">
+              {
+                getFieldDecorator('password', {
+                  rules: [{required: true, message: '请输入密码'}]
+                })(
+                  <Input type="password"/>
+                )
+              }
+            </Form.Item>
+          </Form>
+        </Modal>
+      )
+    }
+  }
+)
+
 class BasicLayout extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      visible: false,
+    }
+
+  }
   componentDidMount() {
     const {
       dispatch,
@@ -68,6 +110,46 @@ class BasicLayout extends React.Component {
       location,
       breadcrumbNameMap,
     };
+  }
+  handleChangeModal = () => {
+    this.setState({
+      visible: true,
+    })
+  }
+
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+    })
+  }
+
+  postChangePassword = (body) => {
+    return request(`${url}/updatePassword`, {
+      method: 'POST',
+      body
+    }).then(()=>{
+      message.success('修改密码成功')
+    }).catch((err) => {
+      message.error('修改密码失败')
+    })
+  }
+
+  handleOk = async () => {
+    const form = this.formRef.props.form
+    form.validateFields(async (err, values) => {
+      if (err) {
+        return
+      }
+      await this.postChangePassword({
+        ...values,
+        type: localStorage.getItem('type'),
+        userId: localStorage.getItem('userId')
+      })
+      form.resetFields()
+      this.setState({
+        visible: false,
+      })
+    })
   }
 
   getLayoutStyle = () => {
@@ -132,6 +214,7 @@ class BasicLayout extends React.Component {
           <Header
             menuData={menuData}
             handleMenuCollapse={this.handleMenuCollapse}
+            handleChangeModal={this.handleChangeModal}
             logo={logo}
             isMobile={isMobile}
             {...this.props}
@@ -155,6 +238,15 @@ class BasicLayout extends React.Component {
           </ContainerQuery>
         </DocumentTitle>
         <Suspense fallback={<PageLoading />}>{this.renderSettingDrawer()}</Suspense>
+        <ChangePasswordForm
+          visible={this.state.visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          // ref={this.formRef}
+          wrappedComponentRef={(formRef) => {
+            this.formRef = formRef
+          }}
+        />
       </React.Fragment>
     );
   }

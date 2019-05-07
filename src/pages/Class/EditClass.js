@@ -38,7 +38,7 @@ class EditTeacher extends React.Component {
 
     return (
       <Modal
-        title={`${this.props.current.className ? '修改' : '添加'}班级`}
+        title={`${this.props.current.name ? '修改' : '添加'}班级`}
         visible={visible}
         onCancel={handleCancel}
         onOk={this.handleOk}
@@ -46,7 +46,7 @@ class EditTeacher extends React.Component {
       >
         <Form>
           <FormItem label="班级名称">
-            {getFieldDecorator('className', { rules: [{ required: true, message: '请输入班级名称' }] })(<Input />)}
+            {getFieldDecorator('name', { rules: [{ required: true, message: '请输入班级名称' }] })(<Input />)}
           </FormItem>
           {/* <FormItem label="班级所属学院">
             {getFieldDecorator('academy', { rules: [{ required: true, message: '请选择学院' }] })(

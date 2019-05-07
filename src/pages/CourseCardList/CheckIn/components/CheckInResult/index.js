@@ -62,21 +62,40 @@ export default class CheckInResult extends Component {
         title: '学生出勤情况',
         render: (text, record) => {
           const {studentId, truename} = record.student
+          let color = ''
+          switch (text) {
+            case 0:
+              color = '#E45757'
+              break
+            case 1:
+              color = '#48D1A1'
+              break
+            case 2:
+              color = '#F5A623'
+              break
+            case 3:
+              color = '#666666'
+              break
+          }
           return (
             <Popover
               title={`修改${truename}出勤情况`}
               content={
                 <span>
                   <a
+                    style={{color: '#E45757'}}
                     onClick={() => {handleUpdateAttendance(studentId, 0)}}
                   >待签到 </a>
                   <a
+                    style={{color: '#48D1A1'}}
                     onClick={() => {handleUpdateAttendance(studentId, 1)}}
                   >已签到 </a>
                   <a
+                    style={{color: '#F5A623'}}
                     onClick={() => {handleUpdateAttendance(studentId, 2)}}
                   >请假 </a>
                   <a
+                    style={{color: '#666666'}}
                     onClick={() => {handleUpdateAttendance(studentId, 3)}}
                   >旷课</a>
                 </span>
@@ -91,8 +110,11 @@ export default class CheckInResult extends Component {
                 //   </Menu>)
                 // }
               >
-                {record.clockInId}
-                {parseState(text)} <Icon type="edit"/>
+                {/* {record.clockInId} */}
+                <span style={{color}}>
+                  {parseState(text)}
+                </span>
+                <Icon type="edit"/>
               </a>
             </Popover>
           )

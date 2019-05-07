@@ -13,7 +13,8 @@ export function getAuthority(str) {
   if (typeof authority === 'string') {
     return [authority];
   }
-  return authority || ['admin'];
+  return authority
+  // || ['admin']; 要注释掉  不然默认启动就是管理员
 }
 
 export function setAuthority(authority) {

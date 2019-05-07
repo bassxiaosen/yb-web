@@ -25,7 +25,7 @@ export default class CourseCardList extends Component {
 
       teacherId: '', // 教师id
 
-      loading: false,
+      loading: true,
     };
   }
 

@@ -36,6 +36,7 @@ import { log } from 'util';
 import qs from 'qs'
 import request from "@/utils/request"
 import url from "@/utils/url"
+import { getDayTime, getRangeTime } from "@/utils/gettime"
 
 const Search = Input.Search;
 export default class CourseDetail extends Component {
@@ -71,7 +72,9 @@ export default class CourseDetail extends Component {
       courseAttendanceData: {
         totalAttendanceNum: 0,
         totalAttendanceRate: 0,
-      }
+      },
+      totalRate: 0,
+      rateVisible: [],
     };
     this.modalForm = React.createRef();
   }
@@ -79,9 +82,12 @@ export default class CourseDetail extends Component {
   async componentDidMount() {
     const { courseId } = this.props.match.params // 获取到courseId
     console.log(courseId)
-    await this.getCourseDetailData()
-    await this.getCourseAttendanceData()
-    await this.getCourseStudent()
+    this.getCourseDetailData()
+    this.getCourseAttendanceData()
+    this.getCourseStudent()
+    // 目前500等修复
+    // this.getCheckInRate()
+    // this.getCheckInRateVisible()
   }
 
   getCourseDetailData = () => {
@@ -147,6 +153,51 @@ export default class CourseDetail extends Component {
     })
   }
 
+  getCheckInRate() {
+    const [ startTime, endTime ] = getRangeTime(6)
+    const { courseId } = this.props.match.params
+    return request(`${url}/attendance/displayAttendanceRate/${courseId}`, {
+      method: 'POST',
+      body: {
+        startTime, endTime
+      }
+    }).then((res) => {
+      const { data } = res
+      this.setState({
+        totalRate: data
+      })
+    }).catch((err) => {
+      console.log(err)
+      message.error('获取总出勤率失败')
+    })
+  }
+
+  async getCheckInRateVisible() {
+    const { courseId } = this.props.match.params
+    for(let i = 6; i >= 0; i--) {
+      const [ startTime, endTime ] = getDayTime(i)
+      await request(`${url}/attendance/displayAttendanceRate/${courseId}`, {
+        method: 'POST',
+        body: {
+          startTime, endTime
+        }
+      }).then((res) => {
+        const dateStr = startTime.substr(0, 10)
+        const { rateVisible } = this.state
+        // console.log(res)
+        this.setState({
+          rateVisible: rateVisible.concat({
+            date: dateStr,
+            value: res.data
+          })
+        })
+      }).catch(err => {
+        console.log(err)
+        message.error('获取出勤率失败')
+      })
+    }
+  }
+
   handleCancel = () => {
     this.setState({ visible: false });
   };
@@ -194,7 +245,8 @@ export default class CourseDetail extends Component {
       },
       courseAttendanceData: {
         totalAttendanceNum, totalAttendanceRate
-      }
+      },
+      totalRate, rateVisible
     } = this.state;
     const { match } = this.props;
     const dataV = [
@@ -356,16 +408,16 @@ export default class CourseDetail extends Component {
               <Col span={24}>
                 <ChartCard
                   title="课程出勤率"
-                  total={`平均：${90}%`}
-                  action={
-                    <div>
-                      <a>周</a>/
-                      <a>月</a>/
-                      <a>半年</a>
-                    </div>
-                  }
+                  total={`平均：${totalRate}%`}
+                  // action={
+                  //   <div>
+                  //     <a>周</a>/
+                  //     <a>月</a>/
+                  //     <a>半年</a>
+                  //   </div>
+                  // }
                 >
-                  <Chart height={400} data={dataV} scale={cols} forceFit>
+                  <Chart height={400} data={rateVisible} scale={cols} forceFit>
                       <Axis name="date" />
                       <Axis name="value" />
                       <Tooltip

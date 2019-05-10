@@ -14,7 +14,7 @@ import SiderMenu from '@/components/SiderMenu';
 import getPageTitle from '@/utils/getPageTitle';
 import styles from './BasicLayout.less';
 import request from "@/utils/request"
-import url from "@/utils/url"
+import lurl from "@/utils/lurl"
 
 // lazy load SettingDrawer
 const SettingDrawer = React.lazy(() => import('@/components/SettingDrawer'));
@@ -62,10 +62,21 @@ const ChangePasswordForm = Form.create({name:'changeForm'})(
           onCancel={onCancel}
           onOk={onOk}
         >
+        <Form layout="vertical">
+            <Form.Item label="旧密码">
+              {
+                getFieldDecorator('oldPassword', {
+                  rules: [{required: true, message: '请输入密码'}]
+                })(
+                  <Input type="password"/>
+                )
+              }
+            </Form.Item>
+          </Form>
           <Form layout="vertical">
             <Form.Item label="新密码">
               {
-                getFieldDecorator('password', {
+                getFieldDecorator('newPassword', {
                   rules: [{required: true, message: '请输入密码'}]
                 })(
                   <Input type="password"/>
@@ -124,7 +135,7 @@ class BasicLayout extends React.Component {
   }
 
   postChangePassword = (body) => {
-    return request(`${url}/updatePassword`, {
+    return request(`${lurl}/user/updatePassword`, {
       method: 'POST',
       body
     }).then(()=>{
@@ -142,8 +153,8 @@ class BasicLayout extends React.Component {
       }
       await this.postChangePassword({
         ...values,
-        type: localStorage.getItem('type'),
-        userId: localStorage.getItem('userId')
+        type: parseInt(localStorage.getItem('type')),
+        userId: parseInt(localStorage.getItem('userId'))
       })
       form.resetFields()
       this.setState({

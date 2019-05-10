@@ -1,6 +1,7 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 import url from "@/utils/url"
+import lurl from "@/utils/lurl"
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
@@ -112,7 +113,7 @@ export async function fakeAccountLogin(params) {
 }
 
 export async function login(params) {
-  return request(`${url}/login`, {
+  return request(`${lurl}/user/login`, {
     method: 'POST',
     body: params,
   });

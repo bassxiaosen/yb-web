@@ -28,12 +28,20 @@ export default {
           }
         })
       }
-      const { authority, userId } = response.data.content
+      const { authority, userId, username } = response.data
       console.log(response.status)
       window.localStorage.setItem('userId', userId)
+      window.localStorage.setItem('username', username)
+      if (authority === 'admin') {
+        window.localStorage.setItem('type', 1)
+      } else if (authority === 'teacher') {
+        window.localStorage.setItem('type', 2)
+      } else if (authority === 'student') {
+        window.localStorage.setItem('type', 3)
+      }
       yield put({
         type: 'changeLoginStatus',
-        payload: response.data.content,
+        payload: response.data,
       });
       // Login successfully
       if (response.status === 0) {

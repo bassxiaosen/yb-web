@@ -279,14 +279,16 @@ class CourseManage extends React.Component {
         dataIndex: 'courseName',
         key: 'name',
         render: (text, record) => (
-          <Link to={`courseManage/courseDetail/${record.courseId}`}>{record.name}</Link>
+          // <Link to={`courseManage/courseDetail/${record.courseId}`}>
+          <span>{record.name}</span>
+          // </Link>
         ),
       },
       { title: '课程所属学院', dataIndex: 'academy.name', key: 'academyName' },
       { title: '上课班级', dataIndex: 'classs.name', key: 'className' },
       { title: '任教老师', dataIndex: 'teacher.truename', key: 'teacher_truename' },
       { title: '课程时间', dataIndex: 'giveDate', key: 'giveDate' },
-      { title: '课程人数', dataIndex: 'studentCount', key: 'studentCount' },
+      { title: '课程人数', dataIndex: 'classs.studentCount', key: 'studentCount' },
       // { title: '上课人数', dataIndex: 'renshu', key: 'renshu' },
       // {
       //   title: '开课时间',

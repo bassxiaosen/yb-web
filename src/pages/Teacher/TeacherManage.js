@@ -210,15 +210,15 @@ class TeacherManage extends React.Component {
       { title: '教师工号', dataIndex: 'teacherNum', key: 'teacherNum' },
       { title: '教师姓名', dataIndex: 'truename', key: 'truename' },
       { title: '教师所属学院', dataIndex: 'academy.name', key: 'academy' },
-      {
-        title: '教师任教课程',
-        key: 'course',
-        render: (text, record, index) => (
-          <span>
-            <a>查看课程</a>
-          </span>
-        )
-      },
+      // {
+      //   title: '教师任教课程',
+      //   key: 'course',
+      //   render: (text, record, index) => (
+      //     <span>
+      //       <a>查看课程</a>
+      //     </span>
+      //   )
+      // },
       {
         title: '操作',
         key: 'operation',

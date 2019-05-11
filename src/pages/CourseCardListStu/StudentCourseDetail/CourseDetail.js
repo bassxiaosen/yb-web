@@ -115,8 +115,8 @@ export default class CourseDetail extends Component {
     this.getPersonalAttendanceData()
     // 500等放通
     // this.getCourseStudent()
-    // this.getCheckInRate()
-    // this.getCheckInRateVisible()
+    this.getCheckInRate()
+    this.getCheckInRateVisible()
   }
 
   getCourseDetailData = () => {
@@ -159,7 +159,7 @@ export default class CourseDetail extends Component {
       })
     })
     .catch((err) => {
-      message.error('获取考勤数据失败')
+      message.error('获取课程考勤数据失败')
       console.log('err', err)
     })
   }
@@ -322,10 +322,10 @@ export default class CourseDetail extends Component {
     ];
     const cols = {
       value: {
-        min: 0
+        alias: '出勤率'
       },
-      year: {
-        range: [0, 1]
+      date: {
+        alias: '日期时间'
       }
     };
     const columns = [
@@ -408,26 +408,26 @@ export default class CourseDetail extends Component {
                 <ChartCard
                   title="课程出勤率"
                   total={`平均：${totalRate}%`}
-                  action={
-                    <div>
-                      <a>周</a>/
-                      <a>月</a>/
-                      <a>半年</a>
-                    </div>
-                  }
+                  // action={
+                  //   <div>
+                  //     <a>周</a>/
+                  //     <a>月</a>/
+                  //     <a>半年</a>
+                  //   </div>
+                  // }
                 >
                   <Chart height={400} data={rateVisible} scale={cols} forceFit>
-                      <Axis name="year" />
+                      <Axis name="date" />
                       <Axis name="value" />
                       <Tooltip
                         crosshairs={{
                           type: "y"
                         }}
                       />
-                      <Geom type="line" position="year*value" size={2} />
+                      <Geom type="line" position="date*value" size={2} />
                       <Geom
                         type="point"
-                        position="year*value"
+                        position="date*value"
                         size={4}
                         shape={"circle"}
                         style={{

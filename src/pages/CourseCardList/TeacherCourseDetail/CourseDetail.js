@@ -86,8 +86,8 @@ export default class CourseDetail extends Component {
     this.getCourseAttendanceData()
     this.getCourseStudent()
     // 目前500等修复
-    // this.getCheckInRate()
-    // this.getCheckInRateVisible()
+    this.getCheckInRate()
+    this.getCheckInRateVisible()
   }
 
   getCourseDetailData = () => {

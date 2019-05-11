@@ -51,26 +51,29 @@ export default class CheckIn extends Component {
       targetTime,
       //初始时以下数据为空数组，即长度为0
       checkInStudent: [],
-      // 历史签到详情数据
-      historyData: [
-        {
-          id: '1',
-          date: '2019-04-15',
-          data: [
-            { checkInId: '1hasaggjiuia9835', time: '14:33', checkInNum: 30, rate: '50%' },
-            { checkInId: '2ashihgayg875478', time: '17:33', checkInNum: 32, rate: '52%' },
-          ],
-        },
-        {
-          id: '2',
-          date: '2019-04-13',
-          data: [
-            { checkInId: '1iausgiugag786387', time: '09:33', checkInNum: 60, rate: '100%' },
-            { checkInId: '2ajhhguiauh845934', time: '13:20', checkInNum: 50, rate: '83%' },
-          ],
-        },
-      ],
+      // 理想历史签到详情数据
+      // historyData: [
+      //   {
+      //     id: '1',
+      //     date: '2019-04-15',
+      //     data: [
+      //       { checkInId: '1hasaggjiuia9835', time: '14:33', checkInNum: 30, rate: '50%' },
+      //       { checkInId: '2ashihgayg875478', time: '17:33', checkInNum: 32, rate: '52%' },
+      //     ],
+      //   },
+      //   {
+      //     id: '2',
+      //     date: '2019-04-13',
+      //     data: [
+      //       { checkInId: '1iausgiugag786387', time: '09:33', checkInNum: 60, rate: '100%' },
+      //       { checkInId: '2ajhhguiauh845934', time: '13:20', checkInNum: 50, rate: '83%' },
+      //     ],
+      //   },
+      // ],
+      // 实际历史签到详情数据
+      historyData: {
 
+      },
       //结果页数据
       noCheckInStudent: [{ name: '缺勤1', id: '1' }, { name: '缺勤2', id: '2' }],
 
@@ -145,16 +148,14 @@ export default class CheckIn extends Component {
       historyLoading: true
     })
     const { courseId } = this.props.match.params
-    return request(`${url}/attendance/queryAttendancesOfCourse/1/10000`,{
+    const correctUrl = 'queryAttendancesOfCourse'
+    const noUrl = 'queryAttendanceCountAndRateOfCourse'
+    return request(`${url}/attendance/${noUrl}/${courseId}`,{
       method: 'POST',
-      body: {
-        course :{
-          courseId,
-        },
-        sortByDate: -1
-      }
     }).then((response) => {
+      // console.log(response)
       const { data: {content} } = response
+      // console.log(content)
       this.setState({
         historyData: content,
         historyLoading: false
@@ -162,6 +163,24 @@ export default class CheckIn extends Component {
     }).catch(err => {
       message.error('获取历史数据失败')
     })
+    // return request(`${url}/attendance/${noUrl}/1/10000`,{
+    //   method: 'POST',
+    //   body: {
+    //     course :{
+    //       courseId,
+    //     },
+    //     sortByDate: -1
+    //   }
+    // }).then((response) => {
+    //   console.log(response)
+    //   const { data: {content} } = response
+    //   this.setState({
+    //     // historyData: content,
+    //     historyLoading: false
+    //   })
+    // }).catch(err => {
+    //   message.error('获取历史数据失败')
+    // })
   }
 
   getAttendanceDetail = () => {

@@ -14,7 +14,34 @@ export default class HistorySider extends Component {
       <>
         <Spin spinning={loading}>
           <ul className={styles.historyList}>
-            {historyData.map(dateCountObj => {
+            {
+              Object.keys(historyData).sort((a, b) => (new Date(b) - new Date(a))).map((item, index) => (
+                <li
+                  key={item}
+                >
+                  <div className={styles.dateRate}>
+                    <span className={styles.dateColor}>{item}</span>
+                    <span>{historyData[item].length}次签到</span>
+                  </div>
+                  <ul className={styles.detailDataList}>
+                    {
+                      historyData[item].map((innerItem, innerIndex) => (
+                        <li
+                          onClick={() => {
+                            handleClickSiderHistory(innerItem.sectionId, innerItem.attendanceCount, innerItem.attendanceRate, `${innerItem.date} ${innerItem.time}`);
+                          }}
+                          key={innerItem.sectionId}
+                        >
+                          <span>{innerItem.time}</span>
+                          <span>{`${innerItem.attendanceCount}(${innerItem.attendanceRate})%`}</span>
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </li>
+              ))
+            }
+            {/* {historyData.map(dateCountObj => {
               const { data } = dateCountObj;
               return (
                 <li
@@ -26,9 +53,9 @@ export default class HistorySider extends Component {
                   <div className={styles.dateRate}>
                     <span className={styles.dateColor}>{dateCountObj.time}</span>
                     <span className={styles.dateColor}>{dateCountObj.attendanceRate}%</span>
-                    {/* <span>{dateCountObj.data.length}次签到</span> */}
+                    <span>{dateCountObj.data.length}次签到</span>
                   </div>
-                  {/* <ul className={styles.detailDataList}>
+                  <ul className={styles.detailDataList}>
                     {data.map(detailData => {
                       return (
                         <li
@@ -42,10 +69,10 @@ export default class HistorySider extends Component {
                         </li>
                       );
                     })}
-                  </ul> */}
+                  </ul>
                 </li>
               );
-            })}
+            })} */}
           </ul>
         </Spin>
 

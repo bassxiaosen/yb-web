@@ -38,7 +38,28 @@ export default class AdminAnalysis extends Component {
       totalCount: 0,
       countVisible: [],
       totalRate: 0,
-      rateVisible: [],
+      rateVisible: [{
+        date: '2019-05-06',
+        value: 50
+      },{
+        date: '2019-05-07',
+        value: 60
+      },{
+        date: '2019-05-08',
+        value: 0
+      },{
+        date: '2019-05-09',
+        value: 80
+      },{
+        date: '2019-05-10',
+        value: 90
+      },{
+        date: '2019-05-11',
+        value: 100
+      },{
+        date: '2019-05-12',
+        value: 40
+      }],
       currentPage: 1,
       total: 0,
       loading: true,
@@ -159,8 +180,8 @@ export default class AdminAnalysis extends Component {
     this.getAttendanceRateOfCourses()
     this.getCheckInCount()
     this.getCheckInCountVisible()
-    this.getCheckInRate()
-    this.getCheckInRateVisible()
+    // this.getCheckInRate()
+    // this.getCheckInRateVisible()
   }
 
   render() {

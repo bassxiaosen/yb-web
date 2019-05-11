@@ -8,6 +8,8 @@ import CheckInResult from './components/CheckInResult/index';
 import qs from 'qs'
 import request from "@/utils/request"
 import url from "@/utils/url"
+import lurl from "@/utils/lurl"
+import moment from "moment"
 
 const { Sider, Content } = Layout;
 
@@ -101,6 +103,9 @@ export default class CheckIn extends Component {
   }
 
   getInitCourseAttendacne = (positionData) => {
+    this.setState({
+      time: moment().format('YYYY-MM-DD HH:mm:ss'),
+    })
     console.log(positionData)
     let siteStr = ''
     if (positionData) {
@@ -223,6 +228,27 @@ export default class CheckIn extends Component {
     })
   }
 
+  getAtendanceCountAndRateOfSection = () => {
+    const { sectionId } = this.state
+    // this.setState({
+    //   rate: 0.0,
+    //   count: 0,
+    // })
+    return request(`${lurl}/attendance/queryAttendanceCountAndRateOfSection/${sectionId}`, {
+      method: 'GET'
+    }).then(response => {
+      const { data } = response
+      const { attendanceCount, attendanceRate } = data
+      this.setState({
+        rate: attendanceRate,
+        count: attendanceCount
+      })
+      console.log(response)
+    }).catch(err => {
+      message.error('获取课堂出勤率与人数失败')
+    })
+  }
+
   deleteAttendanceData = () => {
     this.setState({ historyLoading: true })
     const { sectionId } = this.state
@@ -242,6 +268,7 @@ export default class CheckIn extends Component {
 
   handleUpdateAttendance = (studentId, state) => {
     this.updateAttendance(studentId, state)
+    this.getAtendanceCountAndRateOfSection()
   }
 
   handleChangeDetailPage = (page) => {
@@ -350,6 +377,7 @@ export default class CheckIn extends Component {
       });
       this.getHistoryData()
       this.getAttendanceDetail()
+      this.getAtendanceCountAndRateOfSection()
       return console.log('手动结束');
     } else if (isManual === false) {
       if (this.state.isInit) { // 初始化时不执行过任何业务操作
@@ -358,6 +386,7 @@ export default class CheckIn extends Component {
         this.setState({ newCheckIn: false, visibleCheckPage: false, checkInQRCodeID: '', buttonLoading: false, currentPage: 1 });
         this.getHistoryData()
         this.getAttendanceDetail()
+        this.getAtendanceCountAndRateOfSection()
         console.log('自动结束');
       }
     }

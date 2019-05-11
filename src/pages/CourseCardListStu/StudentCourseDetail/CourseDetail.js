@@ -154,9 +154,11 @@ export default class CourseDetail extends Component {
     return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'POST' })
     .then((response) => {
       const { data } = response
-      this.setState({
-        courseAttendanceData: data
-      })
+      if (data !== undefined) {
+        this.setState({
+          courseAttendanceData: data
+        })
+      }
     })
     .catch((err) => {
       message.error('获取课程考勤数据失败')
@@ -208,9 +210,11 @@ export default class CourseDetail extends Component {
       }
     }).then((res) => {
       const { data } = res
-      this.setState({
-        totalRate: data
-      })
+      if (data !== undefined) {
+        this.setState({
+          totalRate: data
+        })
+      }
     }).catch((err) => {
       console.log(err)
       message.error('获取总出勤率失败')

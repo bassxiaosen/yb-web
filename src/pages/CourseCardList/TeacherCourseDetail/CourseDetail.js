@@ -188,7 +188,7 @@ export default class CourseDetail extends Component {
         this.setState({
           rateVisible: rateVisible.concat({
             date: dateStr,
-            value: res.data
+            value: parseFloat(res.data)
           })
         })
       }).catch(err => {

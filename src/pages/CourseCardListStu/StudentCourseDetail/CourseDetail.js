@@ -140,9 +140,11 @@ export default class CourseDetail extends Component {
     return request(`${url}/attendance/queryAttendanceCountAndRateOfStudent/${courseId}/${localStorage.getItem('userId')}`, { method: 'POST' })
     .then((response) => {
       const { data } = response
-      this.setState({
-        personAttendanceData: data
-      })
+      if (data) {
+        this.setState({
+          personAttendanceData: data
+        })
+      }
     })
     .catch((err) => {
       message.error('获取个人考勤数据失败')
@@ -189,11 +191,13 @@ export default class CourseDetail extends Component {
     })
     .then((response) => {
       const { data:{ content, pageable:{totalElement}} } = response
-      this.setState({
-        data: content,
-        total: totalElement,
-        loading: false,
-      })
+      if (content) {
+        this.setState({
+          data: content,
+          total: totalElement,
+          loading: false,
+        })
+      }
     })
     .catch((err) => {
       message.error('获取学生数据失败')

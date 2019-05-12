@@ -112,9 +112,12 @@ export default class CourseDetail extends Component {
     .then((response) => {
       console.log(response)
       const { data } = response
-      this.setState({
-        courseAttendanceData: data
-      })
+      console.log(data)
+      if (data) {
+        this.setState({
+          courseAttendanceData: data
+        })
+      }
     })
     .catch((err) => {
       message.error('获取考勤数据失败')
@@ -166,9 +169,11 @@ export default class CourseDetail extends Component {
       }
     }).then((res) => {
       const { data } = res
-      this.setState({
-        totalRate: data
-      })
+      if (data) {
+        this.setState({
+          totalRate: data
+        })
+      }
     }).catch((err) => {
       console.log(err)
       message.error('获取总出勤率失败')

@@ -339,10 +339,20 @@ export default class CourseDetail extends Component {
         title: '学生姓名',
       },
       {
-        // dataIndex: 'attendanceRate',
+        dataIndex: 'attendanceRate',
         key: 'attendanceRateOfStudent',
         title: '出勤率',
-        render: (text, record) => `${record.attendanceRate}%`
+        render: (text, record) => {
+          const flag = isNaN(text)
+          if (flag) {
+            return '课程未进行考勤'
+          }
+          return (
+            <span>
+              {record.attendanceRate}%
+            </span>
+          )
+        }
       },
       // {
       //   dataIndex: 'subject',

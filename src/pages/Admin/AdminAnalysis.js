@@ -37,7 +37,7 @@ export default class AdminAnalysis extends Component {
     this.state = {
       totalCount: 0,
       countVisible: [],
-      totalRate: 0,
+      totalRate: 65,
       rateVisible: [{
         date: '2019-05-06',
         value: 50

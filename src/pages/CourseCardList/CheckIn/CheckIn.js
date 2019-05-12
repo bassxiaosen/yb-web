@@ -266,9 +266,9 @@ export default class CheckIn extends Component {
     })
   }
 
-  handleUpdateAttendance = (studentId, state) => {
-    this.updateAttendance(studentId, state)
-    this.getAtendanceCountAndRateOfSection()
+  handleUpdateAttendance = async (studentId, state) => {
+    await this.updateAttendance(studentId, state)
+    await this.getAtendanceCountAndRateOfSection()
   }
 
   handleChangeDetailPage = (page) => {

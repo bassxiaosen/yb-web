@@ -71,14 +71,14 @@ export default class AdminAnalysis extends Component {
   getAttendanceRateOfCourses = () => {
     const [ startTime, endTime ] = getRangeTime(6)
     const { currentPage } = this.state
-
+    this.setState({loading: true})
     return request(`${url}/attendance/queryAttendanceRateOfCourses/${currentPage}/10`, {
       method: 'POST',
       body: {
         startTime, endTime, sortByAttendanceRate: -1
       }
     }).then(res => {
-      const { data: {content}, totalElements } = res
+      const { data: {content, pageable: {totalElements}} } = res
       this.setState({
         tableData: content,
         total: totalElements,
@@ -266,11 +266,20 @@ export default class AdminAnalysis extends Component {
         dataIndex: 'totalAttendanceRate',
         key: 'totalAttendanceRate',
         title: '平均出勤率',
-        render: (text, record) => (
-          <span>
-            {`${text}%`}
-          </span>
-        )
+        render: (text, record) =>{
+          if (text === '-1') {
+            return (
+              <span>
+                未开启考勤
+              </span>
+            )
+          }
+          return (
+            <span>
+              {`${text}%`}
+            </span>
+          )
+        }
       }
     ]
     const pagination = {

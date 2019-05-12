@@ -36,6 +36,7 @@ import { log } from 'util';
 import qs from 'qs'
 import request from "@/utils/request"
 import url from "@/utils/url"
+import lurl from "@/utils/lurl"
 import { getDayTime, getRangeTime } from "@/utils/gettime"
 
 const Search = Input.Search;
@@ -107,8 +108,9 @@ export default class CourseDetail extends Component {
 
   getCourseAttendanceData = () => {
     const { courseId } = this.props.match.params
-    return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'POST' })
+    return request(`${url}/attendance/queryAttendanceNumAndRateOfCourse/${courseId}`, { method: 'POST' })
     .then((response) => {
+      console.log(response)
       const { data } = response
       this.setState({
         courseAttendanceData: data
@@ -141,9 +143,10 @@ export default class CourseDetail extends Component {
       }
     })
     .then((response) => {
-      const { data: { content } } = response
+      const { data: { content, pageable: {totalElements} } } = response
       this.setState({
         data: content,
+        total: totalElements,
         loading: false,
       })
     })

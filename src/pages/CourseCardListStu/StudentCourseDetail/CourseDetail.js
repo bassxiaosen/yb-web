@@ -34,6 +34,7 @@ import {
 import qs from 'qs'
 import request from "@/utils/request"
 import url from "@/utils/url"
+import lurl from "@/utils/lurl"
 import { getDayTime, getRangeTime } from "@/utils/gettime"
 
 const Search = Input.Search;
@@ -70,14 +71,14 @@ export default class CourseDetail extends Component {
     super(props);
     this.state = {
       data: [
-        {
-          startDate: '2019-04-10 15:00',
-          state: 1,
-        },
-        {
-          startDate: '2019-04-15 15:00',
-          state: 2
-        }
+        // {
+        //   startDate: '2019-04-10 15:00',
+        //   state: 1,
+        // },
+        // {
+        //   startDate: '2019-04-15 15:00',
+        //   state: 2
+        // }
       ],
       visible: false,
       current: {},
@@ -114,7 +115,7 @@ export default class CourseDetail extends Component {
     this.getCourseAttendanceData()
     this.getPersonalAttendanceData()
     // 500等放通
-    // this.getCourseStudent()
+    this.getCourseStudent()
     this.getCheckInRate()
     this.getCheckInRateVisible()
   }
@@ -151,7 +152,7 @@ export default class CourseDetail extends Component {
 
   getCourseAttendanceData = () => {
     const { courseId } = this.props.match.params
-    return request(`${url}/attendance/queryAttendanceCountAndRateOfCourse/${courseId}`, { method: 'POST' })
+    return request(`${url}/attendance/queryAttendanceNumAndRateOfCourse/${courseId}`, { method: 'POST' })
     .then((response) => {
       const { data } = response
       if (data !== undefined) {
@@ -172,25 +173,25 @@ export default class CourseDetail extends Component {
     })
     const { courseId } = this.props.match.params
     const { studentNum, currentPage, truename, sortField, direction } = this.state
-    return request(`${url}/attendance/queryAttendancesOfStudent/${currentPage}/10`,
+    return request(`${lurl}/attendance/queryAttendancesOfStudent/${currentPage}/10`,
     {
       method: 'POST',
       body: {
         sortField: 'startDate',
         direction: 2,
         course: {
-          courseId,
+          courseId: parseInt(courseId),
         },
         student: {
-          studentId: localStorage.getItem('userId')
+          studentId: parseInt(localStorage.getItem('userId'))
         }
       }
     })
     .then((response) => {
-      const { data: { content }, totalElements } = response
+      const { data:{ content, pageable:{totalElement}} } = response
       this.setState({
         data: content,
-        total: totalElements,
+        total: totalElement,
         loading: false,
       })
     })
@@ -342,11 +343,27 @@ export default class CourseDetail extends Component {
         dataIndex: 'state',
         key: 'state',
         title: '考勤状态',
-        render: (text, record) => (
-          <span>
+        render: (text, record) =>{
+          let color = ''
+          switch (text) {
+            case 0:
+              color = '#E45757'
+              break
+            case 1:
+              color = '#48D1A1'
+              break
+            case 2:
+              color = '#F5A623'
+              break
+            case 3:
+              color = '#666666'
+              break
+          }
+          return (
+          <span style={{color}}>
             {parseState(text)}
           </span>
-        )
+        )}
       },
       // {
       //   dataIndex: 'subject',
